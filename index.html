@@ -127,8 +127,14 @@ dd { margin: 0; font-family: var(--font-mono); font-variant-numeric: tabular-num
 .phases span { flex: 1; text-align: center; padding: 3px 0; border-radius: 4px; border: 1px solid var(--line); }
 .phases span.on { color: var(--panel); background: var(--accent); border-color: var(--accent); }
 
+.qc-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.qc-side { display: grid; gap: 16px; min-width: 0; }
+.qc-side .view canvas { aspect-ratio: 4 / 3; }
+.seg.wrap-seg { flex-wrap: wrap; row-gap: 6px; }
+input[type=range]:disabled { opacity: 0.4; }
+
 @media (max-width: 760px) {
-  .views, .lower, .tile-grid { grid-template-columns: minmax(0, 1fr); }
+  .views, .lower, .tile-grid, .qc-grid { grid-template-columns: minmax(0, 1fr); }
   .dial { text-align: left; justify-items: start; }
   .numbig { text-align: left; }
   .ticks { font-size: 10px; }
@@ -282,10 +288,99 @@ dd { margin: 0; font-family: var(--font-mono); font-variant-numeric: tabular-num
       <p><b>Fractional dimensions tile as well.</b> At 3.5 the box has edges 1, 1, 1 and 0.5, and its shadow along its own diagonal is a squashed rhombic dodecahedron. It still fills space with no gaps and no overlaps. At exactly 3 the 3D tile goes flat and becomes the hexagon, and the honeycomb collapses into the hexagon tiling.</p>
     </div>
   </section>
+
+  <section class="sec" aria-labelledby="qc-h">
+    <div class="sec-head">
+      <h2 id="qc-h">Shadows that never repeat</h2>
+      <p>Cut the grid of unit cubes in m dimensions with a flat 2D slice. Keep the square faces that lie close to the slice and cast them onto it. They fit together into rhombi with no gaps. With 5 dimensions and the slice tilted by the golden ratio, the result is the Penrose tiling. N. G. de Bruijn showed this in 1981. The tiles are the faces of the m-cube's shadow from the first section: the 2m-gon splits into exactly these rhombi.</p>
+    </div>
+    <div class="qc-grid">
+      <div class="view">
+        <canvas id="cq" aria-label="Rhombus tiling cut from the cube grid"></canvas>
+        <div class="cap"><b id="qcap">Never repeats</b><span id="qname">Penrose tiling</span></div>
+        <div class="foot" id="qfoot"></div>
+      </div>
+      <div class="qc-side">
+        <div class="view">
+          <canvas id="cw" aria-label="Where each corner lands in the hidden directions"></canvas>
+          <div class="cap"><b>The window</b><span>corners seen along the hidden directions</span></div>
+          <div class="foot" id="wfoot"></div>
+        </div>
+        <div class="card tile-ctl">
+          <div class="row">
+            <div class="top"><label class="lab" for="qmr">Dimension of the grid</label><input class="numsm" id="qm" type="number" min="3" step="1" value="5" aria-label="Grid dimension"></div>
+            <input id="qmr" type="range" min="3" max="16" step="1" value="5">
+          </div>
+          <div class="row">
+            <div class="top"><label class="lab" for="qt">Tilt of the slice</label><span class="hint" id="qtl"></span></div>
+            <input id="qt" type="range" min="0" max="8" step="1" value="8">
+          </div>
+          <div class="row">
+            <div class="top"><label class="lab" for="qr">Patch radius</label><span class="hint" id="qrv">12</span></div>
+            <input id="qr" type="range" min="4" max="40" step="1" value="12">
+          </div>
+          <div class="controls">
+            <button class="btn" id="qgrow">Grow</button>
+            <button class="btn" id="qlines">Grid lines</button>
+            <button class="btn" id="qshift">Move the slice</button>
+          </div>
+          <div class="seg wrap-seg" role="group" aria-label="Known tilings" id="qpre">
+            <button data-m="3" data-step="x" data-r="12">Cubes</button>
+            <button data-m="4" data-step="x" data-r="12">Ammann-Beenker</button>
+            <button data-m="5" data-step="x" data-r="12">Penrose</button>
+            <button data-m="5" data-step="3" data-r="22">Penrose at 5/3</button>
+            <button data-m="6" data-step="x" data-r="12">12-fold</button>
+          </div>
+          <dl>
+            <dt>Symmetry</dt><dd id="q-sym"></dd>
+            <dt>Tile shapes</dt><dd id="q-shapes"></dd>
+            <dt>Tiles drawn</dt><dd id="q-n"></dd>
+            <dt>Repeats</dt><dd id="q-rep"></dd>
+            <dt id="q-mixl">Thick to thin</dt><dd id="q-mix"></dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <div class="qc-grid">
+      <div class="view">
+        <canvas id="cq3" class="orbit" aria-label="Rhombohedra cut from the cube grid"></canvas>
+        <div class="cap"><b>In 3D</b><span id="q3name">Ammann rhombohedra</span></div>
+        <div class="foot" id="q3foot"></div>
+      </div>
+      <div class="card tile-ctl">
+        <div class="row">
+          <div class="top"><label class="lab" for="q3mr">Dimension of the grid</label><input class="numsm" id="q3m" type="number" min="3" step="1" value="6" aria-label="3D grid dimension"></div>
+          <input id="q3mr" type="range" min="3" max="12" step="1" value="6">
+        </div>
+        <div class="row">
+          <div class="top"><label class="lab" for="q3r">Ball radius</label><span class="hint" id="q3rv">4.5</span></div>
+          <input id="q3r" type="range" min="1.5" max="7" step="0.1" value="4.5">
+        </div>
+        <div class="controls">
+          <button class="btn" id="q3grow">Grow</button>
+          <button class="btn" id="q3spin">Spin view</button>
+          <button class="btn" id="q3cut">Cut in half</button>
+        </div>
+        <dl>
+          <dt>Cells drawn</dt><dd id="q3-n"></dd>
+          <dt>Cell shapes</dt><dd id="q3-s"></dd>
+          <dt id="q3-mixl">Prolate to oblate</dt><dd id="q3-mix"></dd>
+          <dt>Repeats</dt><dd id="q3-rep"></dd>
+        </dl>
+        <p class="hint" style="margin:0">The 3D slice uses the same frame as the 3D view at the top of the page. From the 6D grid it is icosahedral, and the cells are Ammann's two golden rhombohedra. The 6-cube's shadow, the rhombic triacontahedron, splits into 10 of each.</p>
+      </div>
+    </div>
+    <div class="notes">
+      <p><b>Why it repeats or not.</b> If the slice passes through a second grid point, it passes through a whole lattice of them, and the tiling repeats along that lattice. Penrose's slice is tilted by the golden ratio, which is irrational, so it meets no grid point but the origin and the tiling never repeats. The tilt slider swaps the golden ratio for 1/1, 2/1, 3/2, 5/3 and so on, ratios of Fibonacci numbers. Each fraction gives a tiling that repeats every 40, 105, 275, 720, 1,885 or 4,935 tiles: five times every second Fibonacci number. For other dimensions the slider rounds the slice to fractions with a growing denominator.</p>
+      <p><b>The window.</b> Each corner of the tiling is a point of the m-dimensional grid. Seen along the m-2 hidden directions, every one of them lands inside the shadow of a single cube, the dashed outline. For odd m the plot splits by the sum of the corner's coordinates. A repeating tiling has finitely many kinds of corner, so its corners pile onto a few points. The Penrose tiling has infinitely many, and they fill four pentagons evenly, one for each value 1, 2, 3 or 4 of the corner's coordinate sum. Hover a tile to see its face of the grid and where its corner lands.</p>
+      <p><b>Real quasicrystals.</b> Dan Shechtman found a metal alloy with icosahedral symmetry in 1982. Its diffraction pattern was sharp, as for a crystal, but had fivefold symmetry, which no repeating crystal can have. The 6D cut-and-project model in the 3D view is the standard description of such materials. He received the 2011 Nobel Prize in Chemistry.</p>
+    </div>
+  </section>
 </div>
 
 <script src="hyper.js"></script>
 <script src="tile.js"></script>
+<script src="quasi.js"></script>
 <script>
 (() => {
   const H = window.Hyper, T = window.Tile;
@@ -988,5 +1083,6 @@ postMessage({ key, n: S.n, volume: S.volume, cells: cells.map((c) => ({ faces: c
   requestAnimationFrame(frame);
 })();
 </script>
+<script src="quasi-view.js"></script>
 </body>
 </html>
