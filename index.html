@@ -162,6 +162,16 @@ details.opts[open] > summary { border-color: var(--accent); }
 #c4 { aspect-ratio: 4 / 3; }
 #ce8 { aspect-ratio: 4 / 3; }
 #ccv { aspect-ratio: 1 / 1; }
+#cfr { aspect-ratio: 1 / 1; }
+#cfrc { display: block; width: 100%; height: 170px; }
+#cau-c, #eq-c { display: block; width: 100%; aspect-ratio: 16 / 9; }
+#ho-c { display: block; width: 100%; max-width: 460px; aspect-ratio: 1 / 1; margin: 0 auto; }
+.parts-wrap { max-height: 260px; overflow: auto; }
+table.parts { width: 100%; border-collapse: collapse; font: 13px var(--font-mono); font-variant-numeric: tabular-nums; }
+table.parts th, table.parts td { text-align: right; padding: 3px 6px; border-bottom: 1px solid var(--line); }
+table.parts th:nth-child(2), table.parts td:nth-child(2) { text-align: left; font-family: var(--font-body); }
+table.parts th { color: var(--muted); font-weight: 500; }
+
 #ccirc { display: block; width: 100%; height: 220px; }
 #st-c4 { cursor: grab; }
 .sec-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
@@ -207,6 +217,7 @@ details.opts[open] > summary { border-color: var(--accent); }
       <button role="tab" data-tab="s-never" aria-selected="false">Never repeating</button>
       <button role="tab" data-tab="s-4d" aria-selected="false">The fourth dimension</button>
       <button role="tab" data-tab="s-high" aria-selected="false">High dimensions</button>
+      <button role="tab" data-tab="s-fractal" aria-selected="false">Fractal dimension</button>
       <button role="tab" data-tab="s-curved" aria-selected="false">Curved space</button>
       <button role="tab" data-tab="s-strings" aria-selected="false">String theory</button>
     </nav>
@@ -295,6 +306,25 @@ details.opts[open] > summary { border-color: var(--accent); }
         <dt>Q, 2D shadow</dt><dd id="s-q2"></dd>
         <dt>Q, 3D shadow</dt><dd id="s-q3"></dd>
       </dl>
+    </div>
+  </div>
+
+  <div class="lower">
+    <div class="card hd-card">
+      <h3>The average shadow is a quarter of the surface</h3>
+      <p class="sub" style="margin:0">Cauchy's formula: tumble any convex solid at random, and its shadow's area averages exactly a quarter of its surface area.</p>
+      <canvas id="cau-c" aria-label="A shadow and the running average of shadow areas"></canvas>
+      <div class="row"><div class="top"><label class="lab" for="cau-solid">Solid</label>
+        <select id="cau-solid" class="sel"><option value="cube">Cube</option><option value="tetra">Tetrahedron</option><option value="octa">Octahedron</option><option value="ico">Icosahedron</option><option value="box">Long box, 1 by 1 by 3</option></select></div></div>
+      <div class="controls"><button class="btn" id="cau-run">Run</button><button class="btn" id="cau-reset">Start again</button></div>
+      <dl><dt>Random directions so far</dt><dd id="cau-n"></dd><dt>Average shadow, and surface / 4</dt><dd id="cau-m"></dd><dt>Off by</dt><dd id="cau-d"></dd></dl>
+    </div>
+    <div class="card hd-card">
+      <h3>Parts of the n-cube</h3>
+      <p class="sub" style="margin:0">An n-cube has C(n, k) 2^(n-k) parts of dimension k. Add them with alternating signs and you always get 1, the same Euler count as a solid ball.</p>
+      <div class="row"><div class="top"><label class="lab" for="parts-n">Dimension n</label><input class="numsm" id="parts-n" type="number" min="0" max="60" step="1" value="4"></div></div>
+      <div class="parts-wrap"><table class="parts" id="parts-t"></table></div>
+      <div class="hd-read"><span class="lab">Corners - edges + squares - ...</span><b id="parts-s"></b></div>
     </div>
   </div>
 
@@ -659,6 +689,12 @@ details.opts[open] > summary { border-color: var(--accent); }
         <div class="row"><div class="top"><label class="lab" for="hd-cnt">Random points</label><span class="hint" id="hd-cntv">300</span></div><input id="hd-cnt" type="range" min="1.7" max="3.5" step="0.01" value="2.477"></div>
         <p class="hint hd-foot" id="hd-f5"></p>
       </div>
+      <div class="card hd-card">
+        <h3>Every equator holds almost everything</h3>
+        <canvas id="eq-c" aria-label="How a ball's volume spreads across one coordinate"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="eq-h">Half-width of the band round the equator</label><span class="hint" id="eq-hv">0.10</span></div><input id="eq-h" type="range" min="0.01" max="0.5" step="0.01" value="0.1"></div>
+        <div class="hd-read"><span class="lab">Share of the ball inside the band</span><b id="eq-v"></b></div>
+      </div>
     </div>
     <details class="notes">
       <summary>How it works</summary>
@@ -666,7 +702,45 @@ details.opts[open] > summary { border-color: var(--accent); }
       <p><b>Right angles.</b> The angle between two random directions has density proportional to sin^(n-2), which piles up at 90 degrees with a spread close to 1/sqrt(n) radians. In 10,000 dimensions two random directions are within about half a degree of a right angle. A test in this repository checks the formula against 600 pairs of real random vectors in 400 dimensions.</p>
       <p><b>The vanishing ball.</b> The unit ball's volume is pi^(n/2) / Gamma(n/2 + 1). It grows up to n = 5.2569, then falls faster than any exponential. Its share of the cube around it, divided by 2^n, falls faster still. Nearly all of a high cube is in its corners.</p>
       <p><b>The sphere that leaves its box.</b> In a box of side 4 put a sphere of radius 1 in each of the 2^n corners, and a sphere in the middle touching them all. Its radius is sqrt(n) - 1: a corner sphere's centre is sqrt(n) from the middle. The walls are 2 from the middle. At n = 9 the middle sphere touches the walls, and from n = 10 it reaches past them, though it only touches spheres inside the box. The picture puts these distances on one page to scale.</p>
+      <p><b>Every equator.</b> Pick any direction and look at how a ball's volume spreads along it: the density goes like (1 - x^2)^((n - 1)/2), which narrows as n grows. In 3D a band of half-width 0.1 round the equator holds 15% of the ball; in 1000D it holds 99.85%. Every equator, in every direction, holds almost all of it, and it also lies almost all in the skin.</p>
       <p><b>Equally far.</b> The distance between random points of the unit cube is the square root of a sum of n small terms, so it settles near sqrt(n/6) with a spread that grows only like a constant. The gap between nearest and farthest shrinks to nothing, which is why searching for nearest neighbours stops working in high dimensions. Up to 30 million coordinates the panel samples real points; past that it draws from the normal limit, and says so.</p>
+    </details>
+  </section>
+
+  <section class="panel" id="s-fractal" role="tabpanel" aria-labelledby="fr-h" hidden>
+    <div class="sec-head">
+      <h2 id="fr-h">Fractal dimension</h2>
+      <p>Shrink a line to a third and you need 3 copies to rebuild it; a square needs 9, a cube 27. That is 3^1, 3^2, 3^3: the power is the dimension. A shape that needs 4 copies at a third, like the Koch curve, has a dimension between 1 and 2, where 3^D = 4. The page measures it a second way too, by counting the boxes the shape touches as the boxes shrink.</p>
+    </div>
+    <div class="qc-grid">
+      <div class="view">
+        <canvas id="cfr" class="orbit" aria-label="A fractal with a grid of boxes over it"></canvas>
+        <div class="cap"><b>Boxes touched</b><span id="fr-n"></span></div>
+        <div class="foot" id="fr-pts"></div>
+      </div>
+      <div class="card tile-ctl">
+        <div class="row"><div class="top"><label class="lab" for="fr-kind">Fractal</label>
+          <select id="fr-kind" class="sel"><option value="cantor">Cantor set</option><option value="koch">Koch curve</option><option value="sierpinski" selected>Sierpinski triangle</option><option value="vicsek">Vicsek fractal</option><option value="carpet">Sierpinski carpet</option><option value="dragon">Heighway dragon</option><option value="menger">Menger sponge (3D)</option><option value="flake">Your own: copies round a polygon</option></select></div></div>
+        <div id="fr-flake" class="tile-ctl" hidden>
+          <div class="row"><div class="top"><label class="lab" for="fr-k">Copies</label><span class="hint" id="fr-kv">5</span></div><input id="fr-k" type="range" min="2" max="12" step="1" value="5"></div>
+          <div class="row"><div class="top"><label class="lab" for="fr-r">Size of each copy</label><span class="hint" id="fr-rv">0.38</span></div><input id="fr-r" type="range" min="0.1" max="0.6" step="0.01" value="0.38"></div>
+        </div>
+        <div class="row"><div class="top"><label class="lab" for="fr-box">Box size, from large to small</label></div><input id="fr-box" type="range" min="0" max="6" step="1" value="2"></div>
+        <div class="row"><div class="top"><label class="lab" for="fr-zoom">Zoom into a corner</label><span class="hint" id="fr-zoomv">x1</span></div><input id="fr-zoom" type="range" min="0" max="3" step="0.01" value="0"></div>
+        <div class="controls"><button class="btn" id="fr-grid">Boxes</button></div>
+        <canvas id="cfrc" aria-label="Box counts on a log-log chart"></canvas>
+        <dl>
+          <dt>By the rule</dt><dd id="fr-rule"></dd>
+          <dt>By counting boxes</dt><dd id="fr-meas"></dd>
+        </dl>
+      </div>
+    </div>
+    <details class="notes">
+      <summary>How it works</summary>
+      <p><b>The rule.</b> If a shape is k copies of itself, each scaled by 1/s, then its size at every scale follows s^D = k, so D = log k / log s. It gives 1 for a line, 2 for a square and log 3 / log 2 = 1.585 for the Sierpinski triangle. With copies of different sizes s_i, D solves the sum of s_i^D = 1. This holds when the copies barely overlap; your own flake gives the rule's number even where its copies overlap, and there the box count is the truer one.</p>
+      <p><b>Counting boxes.</b> Cover the plane with boxes of side e and count the ones the shape touches. For a curve the count grows like 1/e, for an area like 1/e^2, and for a fractal like 1/e^D. The chart plots log of the count against log 1/e; the slope of the best line is the measured dimension. Box sides here equal the sizes of the copies themselves, which keeps the grid in step with the shape.</p>
+      <p><b>The dragon.</b> The Heighway dragon fills an area, so its dimension is 2, but its edge is a fractal of dimension about 1.52. At coarse sizes the edge dominates the count, so the measured slope reaches 2 only slowly as the boxes shrink.</p>
+      <p><b>Zoom.</b> The zoom heads into the corner where the first copy sits. At a zoom of s, 1/s of the way down, the picture repeats exactly.</p>
     </details>
   </section>
 
@@ -710,6 +784,14 @@ details.opts[open] > summary { border-color: var(--accent); }
       <div class="hd-read"><span class="lab" style="color:hsl(330, 70%, 50%)">Hyperbolic, 2 pi sinh r</span><b id="cc-h"></b></div>
       <div class="hd-read"><span class="lab">Flat, 2 pi r</span><b id="cc-f"></b></div>
       <div class="hd-read"><span class="lab" style="color:hsl(200, 70%, 45%)">Sphere, 2 pi sin r</span><b id="cc-s"></b></div>
+    </div>
+    <div class="card hd-card">
+      <h3>Carry an arrow round a triangle</h3>
+      <p class="sub" style="margin:0">Walk from the north pole down to the equator, along it, and back up, carrying an arrow without ever turning it. It comes back turned, by exactly the triangle's area. On a flat floor it would come back as it left. This is what curvature is.</p>
+      <canvas id="ho-c" class="orbit" aria-label="An arrow carried round a triangle on a sphere"></canvas>
+      <div class="row"><div class="top"><label class="lab" for="ho-span">Width of the triangle at the equator</label><span class="hint" id="ho-spanv">90°</span></div><input id="ho-span" type="range" min="5" max="180" step="1" value="90"></div>
+      <div class="controls"><button class="btn" id="ho-play">Play</button></div>
+      <dl><dt>Its three angles add to</dt><dd id="ho-sum"></dd><dt>Its area</dt><dd id="ho-area"></dd><dt>The arrow comes back turned by</dt><dd id="ho-turn"></dd></dl>
     </div>
     <details class="notes">
       <summary>How it works</summary>
@@ -1490,6 +1572,10 @@ postMessage({ key, n: S.n, volume: S.volume, cells: cells.map((c) => ({ faces: c
 <script src="highd-view.js"></script>
 <script src="e8.js"></script>
 <script src="e8-view.js"></script>
+<script src="fractal.js"></script>
+<script src="fractal-view.js"></script>
+<script src="intuition.js"></script>
+<script src="intuition-view.js"></script>
 <script src="curved.js"></script>
 <script src="curved-view.js"></script>
 <script src="strings.js"></script>

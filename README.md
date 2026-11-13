@@ -30,6 +30,10 @@ A tilt slider swaps the golden ratio for the Fibonacci fractions 1/1, 2/1, 3/2, 
 
 **E8.** The never repeating tab can cut from E8 instead of the cube grid: its 240 roots in the Coxeter plane, with 30-fold symmetry, and the Elser-Sloane 4D quasicrystal, flat, cast into 3D, or cut by a 3D slice.
 
+**Fractal dimension.** The Cantor set, Koch curve, Sierpinski triangle and carpet, Vicsek fractal, Heighway dragon, Menger sponge, and a flake of your own copies and size. Each shows its dimension by the rule, k copies at 1/s means s^D = k, and measured by counting the boxes it touches as they shrink, with the log-log chart and a zoom that finds the same picture inside.
+
+**Small pieces of intuition.** Cauchy's formula, run live: a convex solid's shadow, averaged over random directions, is a quarter of its surface. The parts of an n-cube, which cancel to 1 with alternating signs. How nearly all of a high-dimensional ball sits near any equator. And an arrow carried round a triangle on a sphere, which comes back turned by the triangle's area.
+
 **Curved space.** Any {p, q} tiling, p-gons meeting q at each corner: on the sphere when 1/p + 1/q > 1/2 (the Platonic solids), flat when it equals 1/2, hyperbolic below. Hyperbolic tilings can be seen in the Poincare disk, the Klein disk, the half-plane or the band; the sphere stereographically or as a globe. Drag to travel, and the tiling rebuilds itself round you. A chart compares a circle's length in the three geometries.
 
 **String theory.** A tab on the geometry behind string theory's hidden dimensions: a curled-up circle dimension, the energy ladder of waves round it, T-duality between radius R and 1/R, a Calabi-Yau cross-section with a choice of projection from 4D, and why the string needs 26 or 10 dimensions.
@@ -61,8 +65,10 @@ The 2D view always draws the exact outline. Roundness is exact up to 120 axes in
 - `e8.js`, `e8-view.js`: E8 and the Elser-Sloane quasicrystal
 - `strings.js`, `strings-view.js`: string theory's geometry
 - `curved.js`, `curved-view.js`: tilings of curved space
+- `fractal.js`, `fractal-view.js`: fractals and their dimension
+- `intuition.js`, `intuition-view.js`: the average shadow, cube parts, the equator and the carried arrow
 - `tabs.js`: one section at a time
-- `tests/geometry.test.js`, `tests/quasi.test.js`, `tests/fourd.test.js`, `tests/highd.test.js`, `tests/knots.test.js`, `tests/e8.test.js`, `tests/strings.test.js`, `tests/solids4.test.js`, `tests/curved.test.js`: geometry checks
+- `tests/geometry.test.js`, `tests/quasi.test.js`, `tests/fourd.test.js`, `tests/highd.test.js`, `tests/knots.test.js`, `tests/e8.test.js`, `tests/strings.test.js`, `tests/solids4.test.js`, `tests/curved.test.js`, `tests/intuition.test.js`: geometry checks
 
 ## Run it
 
@@ -84,9 +90,10 @@ node tests/e8.test.js
 node tests/strings.test.js
 node tests/solids4.test.js
 node tests/curved.test.js
+node tests/intuition.test.js
 ```
 
-The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 1D, 2D and 3D and by exactly one cell in slices of 4D to 6D tilings, slice cell volumes matching the space they fill, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners. For the fourth dimension: the tesseract's slices are a tetrahedron, a truncated tetrahedron and an octahedron and their volumes add up to its 4-volume, the half turn mirrors the hand while keeping every length, and the knot's strands cross in 3D but stay apart in 4D. For high dimensions: the ball volumes and their peak, the densities, the angle spread against 600 pairs of real random vectors, and the Penrose diffraction's sharp peaks and tenfold symmetry. For knots: known Alexander polynomials, unknotting moves that collide in 3D but not in 4D, and relaxation that keeps every knot's type. For E8: 240 roots, a Coxeter element of order 30, 8 rings of 30, two 600-cells in the golden ratio, and the first shells of the lattice. For strings: T-duality, the critical dimensions, -1/12, and the Calabi-Yau equation. For 4D solids: corner and edge counts, Euler's formula and equal edges for all six regular solids, what each kind of rotation leaves still, the net closing into a tesseract without bending, and the Klein bottle meeting itself in 3D but not in 4D. For curved space: the five Platonic solids from {p, q}, q tiles at every corner at angle 360/q, Gauss-Bonnet areas, and hyperbolic moves composed as matrices.
+The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 1D, 2D and 3D and by exactly one cell in slices of 4D to 6D tilings, slice cell volumes matching the space they fill, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners. For the fourth dimension: the tesseract's slices are a tetrahedron, a truncated tetrahedron and an octahedron and their volumes add up to its 4-volume, the half turn mirrors the hand while keeping every length, and the knot's strands cross in 3D but stay apart in 4D. For high dimensions: the ball volumes and their peak, the densities, the angle spread against 600 pairs of real random vectors, and the Penrose diffraction's sharp peaks and tenfold symmetry. For knots: known Alexander polynomials, unknotting moves that collide in 3D but not in 4D, and relaxation that keeps every knot's type. For E8: 240 roots, a Coxeter element of order 30, 8 rings of 30, two 600-cells in the golden ratio, and the first shells of the lattice. For strings: T-duality, the critical dimensions, -1/12, and the Calabi-Yau equation. For 4D solids: corner and edge counts, Euler's formula and equal edges for all six regular solids, what each kind of rotation leaves still, the net closing into a tesseract without bending, and the Klein bottle meeting itself in 3D but not in 4D. For curved space: the five Platonic solids from {p, q}, q tiles at every corner at angle 360/q, Gauss-Bonnet areas, and hyperbolic moves composed as matrices. For fractals: box counts within 0.035 of the rule's dimension, and the dragon's slow approach to 2. For the rest: Cauchy's quarter within 1% for five solids, the cube parts' alternating sum, the equator shares, and the carried arrow's turn equal to the triangle's area.
 
 ## Licence
 
