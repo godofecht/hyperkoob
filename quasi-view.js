@@ -17,7 +17,7 @@
   const q = {
     d: 2, m: 5, step: Q.STEPS, R: 12, seed: 1, view: 'whole', grow: !reduceMotion, lines: false, spin: !reduceMotion, cut: false,
     pos: 0.15, sweep: false, rev: 0, hold: 0, yaw: 0.5, pitch: 0.35,
-    P: null, tiles: [], V: [], solids: [], job: null, dirty: true, hover: null, per: null,
+    P: null, tiles: [], V: [], solids: [], job: null, dirty: true, hover: null, per: null, side: 'window', diff: null,
   };
 
   let theme = {};
@@ -89,7 +89,7 @@
     q.anchor = q.V.length ? q.V[0].x : [0, 0];
     q.distinct = new Set(q.V.map((v) => v.y.map((x) => Math.round(x * 1e4)).join())).size;
     if (!q.grow || q.sweep) q.rev = Infinity; else q.rev = Math.min(q.rev, Reff * 0.15);
-    q.hover = null; q.dirty = true; q.fit2 = 0; q.fit3 = 0;
+    q.hover = null; q.dirty = true; q.fit2 = 0; q.fit3 = 0; q.diff = null; q.diffShown = false;
     stats();
   }
 
@@ -414,6 +414,74 @@
     }
   }
 
+
+  // ---------- diffraction ----------
+  // Light scattered by the corners: |sum exp(i k.x)|^2 over a grid of k.
+  // 1D tilings give a spectrum, 2D tilings a picture, 3D tilings the plane of
+  // k square to the first grid direction (a fivefold axis for the 6D grid).
+  const cd = $('cdiff'), ctxD = cd.getContext('2d');
+  function diffSetup() {
+    const P = q.P, d = P.d;
+    if (d > 3 || !q.V.length) return { none: true };
+    let pts;
+    if (d === 1) pts = q.V.map((v) => [v.x[0], 0]);
+    else if (d === 2) pts = q.V.map((v) => v.x);
+    else {
+      const g0 = P.cols[0], l = Math.hypot(...g0), a = g0.map((x) => x / l);
+      const t = Math.abs(a[0]) < 0.9 ? [1, 0, 0] : [0, 1, 0];
+      const u0 = [a[1] * t[2] - a[2] * t[1], a[2] * t[0] - a[0] * t[2], a[0] * t[1] - a[1] * t[0]], lu = Math.hypot(...u0), u = u0.map((x) => x / lu);
+      const v = [a[1] * u[2] - a[2] * u[1], a[2] * u[0] - a[0] * u[2], a[0] * u[1] - a[1] * u[0]];
+      pts = q.V.map((p) => [p.x[0] * u[0] + p.x[1] * u[1] + p.x[2] * u[2], p.x[0] * v[0] + p.x[1] * v[1] + p.x[2] * v[2]]);
+    }
+    const res = d === 1 ? 801 : 221, kmax = 8.5;
+    return { d, pts, res, kmax, row: d === 1 ? (res - 1) / 2 : 0, out: new Float32Array(res * res), done: false, R: q.Reff };
+  }
+  function diffWork() {
+    const D = q.diff; if (!D || D.none || D.done) return;
+    const t0 = performance.now();
+    if (D.d === 1) { Q.diffraction(D.pts, D.kmax, D.res, D.R, null, D.row, D.row + 1, D.out); D.done = true; return; }
+    while (D.row < D.res && performance.now() - t0 < 8) { Q.diffraction(D.pts, D.kmax, D.res, D.R, null, D.row, D.row + 1, D.out); D.row++; }
+    if (D.row >= D.res) D.done = true;
+  }
+  function drawDiff() {
+    const r = cd.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+    if (cd.width !== w || cd.height !== h) { cd.width = w; cd.height = h; }
+    const c = ctxD; c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = '#05060a'; c.fillRect(0, 0, w, h);
+    const D = q.diff;
+    c.fillStyle = '#9aa0b8'; c.font = `${11 * dpr}px "IBM Plex Mono", monospace`; c.textAlign = 'left';
+    if (!D || D.none) { c.fillText('diffraction is drawn for tilings of 1, 2 and 3 dimensions', 12 * dpr, h - 14 * dpr); return; }
+    let mx = 0; for (let i = 0; i < D.out.length; i++) if (D.out[i] > mx) mx = D.out[i];
+    const lmx = Math.log(1 + mx);
+    if (D.d === 1) {
+      const row = D.out.subarray(D.row * D.res, D.row * D.res + D.res), pad = 16 * dpr;
+      c.strokeStyle = '#d8dcff'; c.lineWidth = dpr; c.beginPath();
+      for (let i = 0; i < D.res; i++) { const x = pad + (i / (D.res - 1)) * (w - 2 * pad), y = h - 34 * dpr - (Math.log(1 + row[i]) / lmx) * (h - 80 * dpr); i ? c.lineTo(x, y) : c.moveTo(x, y); }
+      c.stroke();
+      c.fillText('wave number k, from -9 to 9; intensity on a log scale', 12 * dpr, h - 14 * dpr);
+      return;
+    }
+    const img = c.createImageData(D.res, D.res);
+    for (let i = 0; i < D.res * D.res; i++) {
+      const row = Math.floor(i / D.res); if (row >= D.row && !D.done) break;
+      const v = Math.max(0, Math.log(1 + D.out[i]) / lmx), b = Math.pow(v, 1.6) * 255;
+      img.data[4 * i] = b * 0.85; img.data[4 * i + 1] = b * 0.9; img.data[4 * i + 2] = b; img.data[4 * i + 3] = 255;
+    }
+    const tmp = document.createElement('canvas'); tmp.width = D.res; tmp.height = D.res; tmp.getContext('2d').putImageData(img, 0, 0);
+    const side = Math.min(w, h - 30 * dpr); c.imageSmoothingEnabled = true;
+    c.drawImage(tmp, (w - side) / 2, 4 * dpr, side, side);
+    c.fillText(D.done ? (D.d === 3 ? 'the plane of k square to a fivefold axis' : 'bright spots are sharp: the corners are ordered') : `computing, ${Math.round((100 * D.row) / D.res)}%`, 12 * dpr, h - 14 * dpr);
+  }
+  for (const b of document.querySelectorAll('#wside button')) b.onclick = () => {
+    q.side = b.dataset.side;
+    for (const o of document.querySelectorAll('#wside button')) o.setAttribute('aria-pressed', o === b);
+    cw.hidden = q.side !== 'window'; cd.hidden = q.side !== 'diff';
+    $('wtitle').textContent = q.side === 'window' ? 'The window' : 'Diffraction';
+    $('wtitle').style.color = q.side === 'diff' ? '#e5e7f0' : '';
+    $('wfoot').hidden = q.side !== 'window';
+    q.dirty = true;
+  };
+
   // ---------- interaction ----------
   let drag = null;
   cq.addEventListener('pointerdown', (e) => { if (!is3D()) return; drag = { x: e.clientX, y: e.clientY }; cq.setPointerCapture(e.pointerId); });
@@ -520,13 +588,17 @@
         q.pos += 0.03; if (q.pos > 1.5) q.pos = -1.5; qpos.value = q.pos; start();
       }
     }
+    if (q.side === 'diff' && q.P && !q.job) {
+      if (!q.diff) q.diff = diffSetup();
+      if (!q.diff.done || !q.diffShown) { diffWork(); drawDiff(); q.diffShown = q.diff.done; }
+    } else q.diffShown = false;
     draw();
     requestAnimationFrame(frame);
   }
   readTheme();
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
   new MutationObserver(readTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
-  window.addEventListener('resize', () => { q.dirty = true; });
+  window.addEventListener('resize', () => { q.dirty = true; q.diffShown = false; });
   q.d = 0; setD(2);
   requestAnimationFrame(frame);
 })();

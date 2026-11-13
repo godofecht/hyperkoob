@@ -160,6 +160,18 @@ details.opts[open] > summary { border-color: var(--accent); }
 .sel:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .fd-text { margin: 0; font-size: 14px; color: var(--muted); min-height: 5.5em; }
 #c4 { aspect-ratio: 4 / 3; }
+.hd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+.hd-card { display: grid; gap: 8px; align-content: start; }
+.hd-card h3 { font-family: var(--font-display); font-weight: 500; font-size: 17px; margin: 0; }
+.hd-card canvas { display: block; width: 100%; aspect-ratio: 16 / 10; }
+.hd-read { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.hd-read .lab { margin: 0; }
+.hd-read b { font: 500 18px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--accent); }
+.hd-foot { margin: 0; }
+.cap .seg { pointer-events: auto; }
+.cap .seg button { padding: 3px 8px; font-size: 12px; }
+#cdiff { display: block; width: 100%; aspect-ratio: 4 / 3; background: #05060a; }
+
 
 @media (max-width: 760px) {
   .views, .lower, .tile-grid, .qc-grid { grid-template-columns: minmax(0, 1fr); }
@@ -180,6 +192,7 @@ details.opts[open] > summary { border-color: var(--accent); }
       <button role="tab" data-tab="s-tiling" aria-selected="false">Tiling</button>
       <button role="tab" data-tab="s-never" aria-selected="false">Never repeating</button>
       <button role="tab" data-tab="s-4d" aria-selected="false">The fourth dimension</button>
+      <button role="tab" data-tab="s-high" aria-selected="false">High dimensions</button>
     </nav>
   </header>
 
@@ -352,7 +365,10 @@ details.opts[open] > summary { border-color: var(--accent); }
       <div class="qc-side">
         <div class="view">
           <canvas id="cw" aria-label="Where each corner lands in the hidden directions"></canvas>
-          <div class="cap"><b>The window</b><span>corners seen along the hidden directions</span></div>
+          <canvas id="cdiff" aria-label="Diffraction pattern of the tiling" hidden></canvas>
+          <div class="cap"><b id="wtitle">The window</b>
+            <span class="seg" role="group" aria-label="Side view" id="wside"><button data-side="window" aria-pressed="true">Window</button><button data-side="diff" aria-pressed="false">Diffraction</button></span>
+          </div>
           <div class="foot" id="wfoot"></div>
         </div>
         <div class="card tile-ctl">
@@ -462,6 +478,61 @@ details.opts[open] > summary { border-color: var(--accent); }
       <p><b>Mirror you.</b> Turning by an angle in the plane of x and w sends (x, y, z) to (x cos a, y, z) in our slice, with the rest of x moved into w. The turn is rigid in 4D; every distance in the hand stays the same. Halfway round the hand is flat in our slice, and a half turn sends x to minus x: a mirror image. In 4D left and right hands are the same shape.</p>
       <p><b>Untie any knot.</b> Knots exist only in 3D. The rope here is blended straight from a trefoil to a circle, a move that in 3D passes the rope through itself. Lifted into w by different amounts along its length, the two strands are at different heights in w when they meet, so they pass without touching. The readout tracks the closest the strands come in 3D and in 4D.</p>
       <p><b>See inside you.</b> A creature that lives in a plane sees only the edges of things, and a closed outline hides its inside. From above we see every organ inside its closed body and its closed house at once. A 3D finger pushed through the plane appears inside its body as a circle from nowhere, touches its heart without breaking its skin, and leaves. The neighbour outside sees only the wall the whole time. A 4D eye would see you the same way.</p>
+    </details>
+  </section>
+
+  <section class="panel" id="s-high" role="tabpanel" aria-labelledby="hd-h" hidden>
+    <div class="sec-top">
+      <div class="sec-head">
+        <h2 id="hd-h">Where intuition fails</h2>
+        <p>Your sense of space was built for three dimensions. Here is what the same rules do in more. Every curve is an exact formula except the last panel, which samples real random points.</p>
+      </div>
+      <div class="dial">
+        <label class="lab" for="hd-n">Dimension</label>
+        <input class="numbig" id="hd-n" type="number" min="1" step="1" value="3" inputmode="numeric">
+      </div>
+    </div>
+    <div class="slider">
+      <input id="hd-s" type="range" min="0" max="5" step="0.001" value="0.477" aria-label="Dimension, on a log scale">
+      <div class="ticks" id="hd-ticks"><button data-n="1">1</button><button data-n="3">3</button><button data-n="10">10</button><button data-n="100">100</button><button data-n="1000">1,000</button><button data-n="10000">10,000</button><button data-n="100000">100,000</button></div>
+    </div>
+    <div class="controls"><button class="btn" id="hd-play">Play</button><span class="hint" id="hd-say"></span></div>
+    <div class="hd-grid">
+      <div class="card hd-card">
+        <h3>All peel, no fruit</h3>
+        <canvas id="hd-c1" aria-label="All peel, no fruit"></canvas>
+        <div class="hd-read"><span class="lab">Volume in the outer 1%</span><b id="hd-v1"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>Every direction is at right angles</h3>
+        <canvas id="hd-c2" aria-label="Every direction is at right angles"></canvas>
+        <div class="hd-read"><span class="lab">Angle between two random directions</span><b id="hd-v2"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>The ball that vanishes</h3>
+        <canvas id="hd-c3" aria-label="The ball that vanishes"></canvas>
+        <div class="hd-read"><span class="lab">Volume of the unit ball</span><b id="hd-v3"></b></div>
+        <div class="hd-read"><span class="lab">Share of its box [-1, 1]^n</span><b id="hd-v3b"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>The sphere that leaves its box</h3>
+        <canvas id="hd-c4" aria-label="The sphere that leaves its box"></canvas>
+        <div class="hd-read"><span class="lab">Radius of the middle sphere, walls at 2</span><b id="hd-v4"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>Everyone is equally far away</h3>
+        <canvas id="hd-c5" aria-label="Everyone is equally far away"></canvas>
+        <div class="hd-read"><span class="lab">Farthest neighbour, against the nearest</span><b id="hd-v5"></b></div>
+        <p class="hint hd-foot" id="hd-f5"></p>
+      </div>
+    </div>
+    <details class="notes">
+      <summary>How it works</summary>
+      <p><b>All peel.</b> A ball of radius 1 in n dimensions has volume proportional to r^n inside radius r, so the share inside radius 0.99 is 0.99^n. At n = 1000 that is 0.004%: the rest, 99.996%, sits in the outer 1%. The curve is the density of the distance from the centre to a random point, n r^(n-1).</p>
+      <p><b>Right angles.</b> The angle between two random directions has density proportional to sin^(n-2), which piles up at 90 degrees with a spread close to 1/sqrt(n) radians. In 10,000 dimensions two random directions are within about half a degree of a right angle. A test in this repository checks the formula against 600 pairs of real random vectors in 400 dimensions.</p>
+      <p><b>The vanishing ball.</b> The unit ball's volume is pi^(n/2) / Gamma(n/2 + 1). It grows up to n = 5.2569, then falls faster than any exponential. Its share of the cube around it, divided by 2^n, falls faster still. Nearly all of a high cube is in its corners.</p>
+      <p><b>The sphere that leaves its box.</b> In a box of side 4 put a sphere of radius 1 in each of the 2^n corners, and a sphere in the middle touching them all. Its radius is sqrt(n) - 1: a corner sphere's centre is sqrt(n) from the middle. The walls are 2 from the middle. At n = 9 the middle sphere touches the walls, and from n = 10 it reaches past them, though it only touches spheres inside the box. The picture puts these distances on one page to scale.</p>
+      <p><b>Equally far.</b> The distance between random points of the unit cube is the square root of a sum of n small terms, so it settles near sqrt(n/6) with a spread that grows only like a constant. The gap between nearest and farthest shrinks to nothing, which is why searching for nearest neighbours stops working in high dimensions. Up to 30 million coordinates the panel samples real points; past that it draws from the normal limit, and says so.</p>
     </details>
   </section>
 </div>
@@ -1174,6 +1245,8 @@ postMessage({ key, n: S.n, volume: S.volume, cells: cells.map((c) => ({ faces: c
 <script src="quasi-view.js"></script>
 <script src="fourd.js"></script>
 <script src="fourd-view.js"></script>
+<script src="highd.js"></script>
+<script src="highd-view.js"></script>
 <script src="tabs.js"></script>
 </body>
 </html>

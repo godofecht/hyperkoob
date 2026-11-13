@@ -486,5 +486,35 @@
     return v;
   }
 
-  g.Quasi = { PHI, FIB, DEN, STEPS, star, setup, build, buildAll, latticeOf, vertices, window2, period, planeLattice, contains, place, solid, volume, totient, slabCost };
+  // Diffraction: the intensity |sum_j a_j exp(i k . x_j)|^2 / sum a_j^2 at
+  // each k of a res x res grid over [-kmax, kmax]^2 (rows rowFrom..rowTo-1),
+  // or at the listed points `ks`. a_j is a Gaussian taper of width R / 2,
+  // which keeps the patch edge from ringing. On the grid the exponential
+  // splits into an x part and a y part, so no trig runs in the inner loop.
+  function diffraction(pts, kmax, res, R, ks, rowFrom = 0, rowTo = res, out) {
+    const N = pts.length, a = new Float64Array(N);
+    let norm = 0;
+    for (let j = 0; j < N; j++) { const r = Math.hypot(pts[j][0], pts[j][1]); a[j] = Math.exp(-((r / (0.5 * R)) ** 2)); norm += a[j] * a[j]; }
+    if (ks) return ks.map(([kx, ky]) => { let c = 0, s = 0; for (let j = 0; j < N; j++) { const t = kx * pts[j][0] + ky * pts[j][1]; c += a[j] * Math.cos(t); s += a[j] * Math.sin(t); } return (c * c + s * s) / norm; });
+    out = out || new Float32Array(res * res);
+    const step = res > 1 ? (2 * kmax) / (res - 1) : 0, re = new Float64Array(res), im = new Float64Array(res);
+    for (let row = rowFrom; row < rowTo; row++) {
+      const ky = -kmax + row * step;
+      re.fill(0); im.fill(0);
+      for (let j = 0; j < N; j++) {
+        const x = pts[j][0], yph = ky * pts[j][1];
+        // a_j e^{i ky y} e^{i kx x}, with e^{i kx x} stepped by rotation
+        let cr = a[j] * Math.cos(yph - kmax * x), ci = a[j] * Math.sin(yph - kmax * x);
+        const dr = Math.cos(step * x), di = Math.sin(step * x);
+        for (let col = 0; col < res; col++) {
+          re[col] += cr; im[col] += ci;
+          const t = cr * dr - ci * di; ci = cr * di + ci * dr; cr = t;
+        }
+      }
+      for (let col = 0; col < res; col++) out[row * res + col] = (re[col] * re[col] + im[col] * im[col]) / norm;
+    }
+    return out;
+  }
+
+  g.Quasi = { PHI, FIB, DEN, STEPS, star, setup, build, buildAll, latticeOf, vertices, window2, period, planeLattice, contains, place, solid, volume, totient, slabCost, diffraction };
 })(typeof window !== 'undefined' ? window : globalThis);

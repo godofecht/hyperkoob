@@ -20,7 +20,11 @@ A tilt slider swaps the golden ratio for the Fibonacci fractions 1/1, 2/1, 3/2, 
 
 **What a fourth dimension could do to you.** Four demos, each plain geometry with a test behind it. A tesseract passes through a sealed box as a growing and shrinking solid, and a key leaves the box by a short trip in w. A right hand turned half way round in the plane of x and w comes back as a left hand. A trefoil knot is pulled straight into a loop, its strands passing each other at different heights in w. A creature in a plane has its organs on show from above, and a finger from above touches its heart while its neighbour sees only a wall.
 
-The page has one tab per section, and the address names the tab: `#shadows`, `#tiling`, `#never`, `#4d`.
+**Where intuition fails.** One dimension slider, from 1 to as high as you type, drives five panels: the share of a ball's volume in its outer 1% (99.996% at n = 1000); the angle between two random directions, which piles up at 90 degrees with a spread near 1/sqrt(n); the unit ball's volume, which peaks at n = 5.2569 and then falls towards zero; the sphere in the middle of a box of corner spheres, whose radius sqrt(n) - 1 passes the walls from n = 10; and distances between random points, which all become about the same.
+
+**Diffraction.** The never repeating tab can show the light a tiling scatters, |sum exp(i k . x)|^2 over its corners. The Penrose tiling gives sharp spots with tenfold symmetry, the pattern no repeating crystal can make, which is what Shechtman saw.
+
+The page has one tab per section, and the address names the tab: `#shadows`, `#tiling`, `#never`, `#4d`, `#high`.
 
 ## How large dimensions are drawn
 
@@ -41,8 +45,9 @@ The 2D view always draws the exact outline. Roundness is exact up to 120 axes in
 - `quasi.js`: cut-and-project tilings from the cube grid
 - `quasi-view.js`: the drawing and controls for those tilings
 - `fourd.js`, `fourd-view.js`: the fourth dimension demos
+- `highd.js`, `highd-view.js`: high-dimensional geometry
 - `tabs.js`: one section at a time
-- `tests/geometry.test.js`, `tests/quasi.test.js`, `tests/fourd.test.js`: geometry checks
+- `tests/geometry.test.js`, `tests/quasi.test.js`, `tests/fourd.test.js`, `tests/highd.test.js`: geometry checks
 
 ## Run it
 
@@ -58,9 +63,10 @@ python3 -m http.server
 node tests/geometry.test.js
 node tests/quasi.test.js
 node tests/fourd.test.js
+node tests/highd.test.js
 ```
 
-The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 1D, 2D and 3D and by exactly one cell in slices of 4D to 6D tilings, slice cell volumes matching the space they fill, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners. For the fourth dimension: the tesseract's slices are a tetrahedron, a truncated tetrahedron and an octahedron and their volumes add up to its 4-volume, the half turn mirrors the hand while keeping every length, and the knot's strands cross in 3D but stay apart in 4D.
+The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 1D, 2D and 3D and by exactly one cell in slices of 4D to 6D tilings, slice cell volumes matching the space they fill, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners. For the fourth dimension: the tesseract's slices are a tetrahedron, a truncated tetrahedron and an octahedron and their volumes add up to its 4-volume, the half turn mirrors the hand while keeping every length, and the knot's strands cross in 3D but stay apart in 4D. For high dimensions: the ball volumes and their peak, the densities, the angle spread against 600 pairs of real random vectors, and the Penrose diffraction's sharp peaks and tenfold symmetry.
 
 ## Licence
 
