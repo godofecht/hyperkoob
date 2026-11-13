@@ -165,6 +165,9 @@ details.opts[open] > summary { border-color: var(--accent); }
 .sec-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
 #nv-cube, #nv-e8 { display: grid; gap: 16px; }
 #nv-cube[hidden], #nv-e8[hidden] { display: none; }
+.s4-planes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; }
+.s4-p { display: grid; grid-template-columns: 2.6em minmax(0, 1fr) 2.2em; align-items: center; gap: 6px; font: 500 12px var(--font-mono); color: var(--muted); }
+.s4-p b { font-weight: 500; text-align: right; color: var(--fg); }
 .mz-pad { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .mz-pad .mz-hid { border-color: var(--accent); }
 .fd-opts { display: grid; gap: 12px; }
@@ -510,6 +513,7 @@ details.opts[open] > summary { border-color: var(--accent); }
           <button data-demo="see" aria-pressed="false">See inside you</button>
           <button data-demo="maze" aria-pressed="false">4D maze</button>
           <button data-demo="hopf" aria-pressed="false">Hopf fibration</button>
+          <button data-demo="solids" aria-pressed="false">Rotate in 4D</button>
         </div>
         <p class="fd-text" id="fd-text"></p>
         <div class="fd-opts tile-ctl" data-for="knot" hidden>
@@ -546,6 +550,26 @@ details.opts[open] > summary { border-color: var(--accent); }
             <div class="seg" role="group" aria-label="Which circles" id="hp-pat"><button data-p="ring" aria-pressed="false">one ring</button><button data-p="rings" aria-pressed="true">three rings</button><button data-p="spiral" aria-pressed="false">a spiral</button></div></div></div>
           <div class="row"><div class="top"><label class="lab" for="hp-turn">Turn in the x-w plane (Play turns it)</label></div>
             <input id="hp-turn" type="range" min="0" max="360" step="1" value="0"></div>
+        </div>
+        <div class="fd-opts tile-ctl" data-for="solids" hidden>
+          <div class="row"><div class="top"><label class="lab" for="s4-obj">Object</label>
+            <select id="s4-obj" class="sel"><option value="cell5">5-cell</option><option value="tesseract" selected>Tesseract</option><option value="cell16">16-cell</option><option value="cell24">24-cell</option><option value="cell120">120-cell</option><option value="cell600">600-cell</option><option value="net">Tesseract net, folding</option><option value="clifford">Clifford torus</option><option value="klein">Klein bottle</option></select></div></div>
+          <div class="row" id="s4-foldrow" hidden><div class="top"><label class="lab" for="s4-fold">Fold into w</label><button class="btn" id="s4-foldbtn" aria-pressed="false">Fold</button></div>
+            <input id="s4-fold" type="range" min="0" max="90" step="0.5" value="90"></div>
+          <div class="row"><div class="top"><span class="lab">Speed in each plane, degrees a second</span></div>
+          <div class="s4-planes" id="s4-planes">
+            <label class="s4-p"><span>x-y</span><input id="s4-p0" type="range" min="-60" max="60" step="1" value="0" aria-label="Speed in the x-y plane"><b id="s4-pv0">0</b></label>
+            <label class="s4-p"><span>x-z</span><input id="s4-p1" type="range" min="-60" max="60" step="1" value="0" aria-label="Speed in the x-z plane"><b id="s4-pv1">0</b></label>
+            <label class="s4-p"><span>x-w</span><input id="s4-p2" type="range" min="-60" max="60" step="1" value="0" aria-label="Speed in the x-w plane"><b id="s4-pv2">0</b></label>
+            <label class="s4-p"><span>y-z</span><input id="s4-p3" type="range" min="-60" max="60" step="1" value="0" aria-label="Speed in the y-z plane"><b id="s4-pv3">0</b></label>
+            <label class="s4-p"><span>y-w</span><input id="s4-p4" type="range" min="-60" max="60" step="1" value="0" aria-label="Speed in the y-w plane"><b id="s4-pv4">0</b></label>
+            <label class="s4-p"><span>z-w</span><input id="s4-p5" type="range" min="-60" max="60" step="1" value="0" aria-label="Speed in the z-w plane"><b id="s4-pv5">0</b></label>
+          </div></div>
+          <div class="seg wrap-seg" role="group" aria-label="Rotation presets" id="s4-pre"><button data-p="simple">One plane</button><button data-p="double">Two planes</button><button data-p="isoclinic">Two, equal</button><button data-p="three">A 3D turn</button><button data-p="all">All six</button><button data-p="still">Stop</button></div>
+          <div class="row"><div class="top"><span class="lab">See it</span>
+            <div class="seg" role="group" aria-label="How to see it" id="s4-view"><button data-v="persp" aria-pressed="true">perspective</button><button data-v="flat" aria-pressed="false">flat</button><button data-v="slice" aria-pressed="false">3D slice</button></div></div></div>
+          <div class="row" id="s4-posrow" hidden><div class="top"><label class="lab" for="s4-pos">Slice at w =</label></div>
+            <input id="s4-pos" type="range" min="-1" max="1" step="0.01" value="0"></div>
         </div>
         <div class="row" id="fd-trow">
           <div class="top"><label class="lab" for="fd-t">Time</label><button class="btn" id="fd-play" aria-pressed="true">Pause</button></div>
@@ -1389,6 +1413,8 @@ postMessage({ key, n: S.n, volume: S.volume, cells: cells.map((c) => ({ faces: c
 <script src="fourd-view.js"></script>
 <script src="knots.js"></script>
 <script src="fourd-more.js"></script>
+<script src="solids4.js"></script>
+<script src="solids4-view.js"></script>
 <script src="highd.js"></script>
 <script src="highd-view.js"></script>
 <script src="e8.js"></script>

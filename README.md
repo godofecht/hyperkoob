@@ -26,6 +26,8 @@ A tilt slider swaps the golden ratio for the Fibonacci fractions 1/1, 2/1, 3/2, 
 
 **Knots, a maze and the Hopf fibration.** The fourth dimension tab also unknots any knot you pick (trefoil, figure-eight, cinquefoil or any (p, q) torus knot): it finds which crossings to switch with the Alexander polynomial, computed exactly from the knot diagram, moves each strand round the other through w, and lets the rope relax into a loop. Without w the same relaxation leaves the knot tied. You choose which three of x, y, z and w are on screen, how far to tilt toward the hidden one, and the plane of the diagram. A 4D maze shows one 3D slice at a time; you choose which axis is hidden. The Hopf fibration fills the 3-sphere with circles that, projected into 3D, all link each other once.
 
+**Rotate in 4D.** The six regular 4D solids (5-cell, tesseract, 16-cell, 24-cell, 120-cell, 600-cell), the tesseract's net folding up into 4D, the Clifford torus and a Klein bottle that only stops cutting through itself in 4D. Each turns at its own speed in any of the six planes of 4D, and is seen in perspective, flat, or as a 3D slice. The page reports what the rotation leaves still: a plane for a turn in one plane, only the centre for a double rotation.
+
 **E8.** The never repeating tab can cut from E8 instead of the cube grid: its 240 roots in the Coxeter plane, with 30-fold symmetry, and the Elser-Sloane 4D quasicrystal, flat, cast into 3D, or cut by a 3D slice.
 
 **String theory.** A tab on the geometry behind string theory's hidden dimensions: a curled-up circle dimension, the energy ladder of waves round it, T-duality between radius R and 1/R, a Calabi-Yau cross-section with a choice of projection from 4D, and why the string needs 26 or 10 dimensions.
@@ -53,10 +55,11 @@ The 2D view always draws the exact outline. Roundness is exact up to 120 axes in
 - `fourd.js`, `fourd-view.js`: the fourth dimension demos
 - `highd.js`, `highd-view.js`: high-dimensional geometry
 - `knots.js`, `fourd-more.js`: knots, the maze and the Hopf fibration
+- `solids4.js`, `solids4-view.js`: the regular 4D solids, 4D surfaces and rotations
 - `e8.js`, `e8-view.js`: E8 and the Elser-Sloane quasicrystal
 - `strings.js`, `strings-view.js`: string theory's geometry
 - `tabs.js`: one section at a time
-- `tests/geometry.test.js`, `tests/quasi.test.js`, `tests/fourd.test.js`, `tests/highd.test.js`, `tests/knots.test.js`, `tests/e8.test.js`, `tests/strings.test.js`: geometry checks
+- `tests/geometry.test.js`, `tests/quasi.test.js`, `tests/fourd.test.js`, `tests/highd.test.js`, `tests/knots.test.js`, `tests/e8.test.js`, `tests/strings.test.js`, `tests/solids4.test.js`: geometry checks
 
 ## Run it
 
@@ -76,9 +79,10 @@ node tests/highd.test.js
 node tests/knots.test.js
 node tests/e8.test.js
 node tests/strings.test.js
+node tests/solids4.test.js
 ```
 
-The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 1D, 2D and 3D and by exactly one cell in slices of 4D to 6D tilings, slice cell volumes matching the space they fill, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners. For the fourth dimension: the tesseract's slices are a tetrahedron, a truncated tetrahedron and an octahedron and their volumes add up to its 4-volume, the half turn mirrors the hand while keeping every length, and the knot's strands cross in 3D but stay apart in 4D. For high dimensions: the ball volumes and their peak, the densities, the angle spread against 600 pairs of real random vectors, and the Penrose diffraction's sharp peaks and tenfold symmetry. For knots: known Alexander polynomials, unknotting moves that collide in 3D but not in 4D, and relaxation that keeps every knot's type. For E8: 240 roots, a Coxeter element of order 30, 8 rings of 30, two 600-cells in the golden ratio, and the first shells of the lattice. For strings: T-duality, the critical dimensions, -1/12, and the Calabi-Yau equation.
+The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 1D, 2D and 3D and by exactly one cell in slices of 4D to 6D tilings, slice cell volumes matching the space they fill, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners. For the fourth dimension: the tesseract's slices are a tetrahedron, a truncated tetrahedron and an octahedron and their volumes add up to its 4-volume, the half turn mirrors the hand while keeping every length, and the knot's strands cross in 3D but stay apart in 4D. For high dimensions: the ball volumes and their peak, the densities, the angle spread against 600 pairs of real random vectors, and the Penrose diffraction's sharp peaks and tenfold symmetry. For knots: known Alexander polynomials, unknotting moves that collide in 3D but not in 4D, and relaxation that keeps every knot's type. For E8: 240 roots, a Coxeter element of order 30, 8 rings of 30, two 600-cells in the golden ratio, and the first shells of the lattice. For strings: T-duality, the critical dimensions, -1/12, and the Calabi-Yau equation. For 4D solids: corner and edge counts, Euler's formula and equal edges for all six regular solids, what each kind of rotation leaves still, the net closing into a tesseract without bending, and the Klein bottle meeting itself in 3D but not in 4D.
 
 ## Licence
 
