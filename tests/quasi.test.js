@@ -17,7 +17,7 @@ function coverage(P, R, samples) {
   for (let k = 0; k < samples; k++) {
     let p; do { p = Array.from({ length: P.d }, () => (rand() * 2 - 1) * R * 0.5); } while (Math.hypot(...p) > R * 0.5);
     let c = 0;
-    for (const t of tiles) if (Math.abs(t.center[0] - p[0]) < 3 && Math.abs(t.center[1] - p[1]) < 3 && Q.contains(t, p)) c++;
+    for (const t of tiles) if (p.every((v, a) => Math.abs(t.center[a] - v) < 3) && Q.contains(t, p)) c++;
     counts[c] = (counts[c] || 0) + 1;
   }
   return { tiles, counts };
@@ -30,6 +30,44 @@ for (const m of [3, 4, 6, 7]) {
   const P = Q.setup(3, m), { tiles, counts } = coverage(P, 3.2, 600);
   check(`3D m=${m}: every point in exactly one rhombohedron (${tiles.length} tiles)`, counts[1] === 600, JSON.stringify(counts));
 }
+
+// 1b. The 1D Fibonacci chain, and slices of 4D-and-up tilings.
+{
+  const P = Q.setup(1, 2, Q.STEPS), t = Q.buildAll(P, 40);
+  const L = t.filter((x) => x.shape === 1).length, S = t.filter((x) => x.shape === 2).length;
+  const lens = [...new Set(t.map((x) => Math.abs(x.edges[0][0]).toFixed(6)))].map(Number).sort((a, b) => b - a);
+  check('Fibonacci chain: long/short lengths in the golden ratio', lens.length === 2 && Math.abs(lens[0] / lens[1] - Q.PHI) < 1e-5, lens.join(' / '));
+  check('Fibonacci chain: long to short count near the golden ratio', Math.abs(Math.max(L, S) / Math.min(L, S) - Q.PHI) < 0.06, `${L}:${S}`);
+  const per = Q.period(Q.setup(1, 2, 3));
+  check('Fibonacci 5/3 repeats every 8 tiles', per.tiles === 8, String(per.tiles));
+  const { counts } = coverage(P, 30, 500);
+  check('Fibonacci chain covers the line once', counts[1] === 500, JSON.stringify(counts));
+}
+for (const [d, m] of [[4, 5], [4, 7], [4, 8], [5, 11], [6, 13]]) {
+  const P = Q.setup(d, m), off = Array.from({ length: d - 3 }, (_, i) => 0.3 + 0.17 * i), R = 2.2;
+  const tiles = Q.buildAll(P, R + 1.5, off);
+  const counts = {};
+  for (let k = 0; k < 300; k++) {
+    let y; do { y = [0, 1, 2].map(() => (rand() * 2 - 1) * R); } while (Math.hypot(...y) > R);
+    const p = [...y, ...off];
+    const c = tiles.filter((t) => Q.contains(t, p)).length;
+    counts[c] = (counts[c] || 0) + 1;
+  }
+  const sols = tiles.map((t) => Q.solid(t, off)).filter(Boolean);
+  check(`${d}D from ${m}D: slice points lie in exactly one cell (${sols.length} cut cells)`, counts[1] === 300, JSON.stringify(counts));
+}
+// Slice cells: their 3D volumes add up to the ball they fill.
+{
+  const P = Q.setup(4, 7), off = [0.21], tiles = Q.buildAll(P, 4, off);
+  const sols = tiles.map((t) => Q.solid(t, off)).filter(Boolean);
+  const inner = sols.filter((s) => Math.hypot(...s.center) < 1.6);
+  let hit = 0; const N = 4000;
+  for (let k = 0; k < N; k++) { const y = [0, 1, 2].map(() => (rand() * 2 - 1) * 4); if (tiles.some((t) => Math.hypot(...t.center.slice(0, 3)) < 6 && Q.contains(t, [...y, ...off]))) hit++; }
+  const vsum = sols.reduce((a, s) => a + Q.volume(s), 0);
+  check('4D slice cells have positive volume', inner.every((s) => Q.volume(s) > 0), `${inner.length} cells`);
+  check('4D slice: cell volumes match the space they cover', Math.abs(vsum / ((hit / N) * 512) - 1) < 0.05, `${vsum.toFixed(1)} vs ${((hit / N) * 512).toFixed(1)}`);
+}
+check('5D slice of the 5D grid would be cubes; 4D from 5D repeats', Q.setup(4, 5).repeats && !Q.setup(4, 7).repeats && Q.setup(4, 6).repeats && !Q.setup(4, 8).repeats);
 
 // 2. Penrose: corners sit on exactly 4 layers, and thick:thin tends to the golden ratio.
 {

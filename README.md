@@ -14,7 +14,9 @@ Live: https://godofecht.github.io/hyperkoob/
 
 **Shadows that tile.** The n-cube's diagonal shadow, one dimension down, tiles that space: hexagons for the cube, rhombic dodecahedra for the tesseract. The page animates the projection in two moves, turning the diagonal onto the viewing axis and collapsing along it. For 5 dimensions and up the tile is the Voronoi cell of the A(n-1) lattice, and the page shows a 3D slice through that honeycomb.
 
-**Shadows that never repeat.** Cut the cube grid in m dimensions with a flat slice and cast the faces near the slice onto it. With m = 5 and a slice tilted by the golden ratio, the result is the Penrose tiling (de Bruijn, 1981). A tilt slider swaps the golden ratio for the Fibonacci fractions 1/1, 2/1, 3/2, 5/3 and so on. Each gives a tiling that repeats, every 40, 105, 275, 720, 1885 or 4935 tiles. A second view shows where every corner lands in the hidden directions: on a few points when the tiling repeats, spread over four pentagons when it does not. The same cut in 3D from the 6D grid gives Ammann's two golden rhombohedra, the standard model of an icosahedral quasicrystal.
+**Shadows that never repeat.** Cut the cube grid in m dimensions with a flat slice of d dimensions and cast the faces near the slice onto it. Both d and m are free. A 1D slice of the 2D grid at the golden ratio gives the Fibonacci chain, drawn with the grid, the strip and the points dropping onto the line. A 2D slice of the 5D grid gives the Penrose tiling (de Bruijn, 1981). A 3D slice of the 6D grid gives Ammann's golden rhombohedra, the standard model of an icosahedral quasicrystal. From d = 4 up the tiling is shown as a 3D slice, which can sweep through the extra dimensions, or as its shadow cast into 3D or 2D with the page's own frames.
+
+A tilt slider swaps the golden ratio for the Fibonacci fractions 1/1, 2/1, 3/2, 5/3 and so on. Each gives a tiling that repeats: in 2D every 40, 105, 275, 720, 1885 or 4935 tiles. A second view shows where every corner lands in the hidden directions: on a few points when the tiling repeats, spread evenly over the window when it does not. Above 3D the slice is free of grid points while d is below Euler's totient of m (2m for even m), so 4D from 5D repeats and 4D from 7D does not.
 
 ## How large dimensions are drawn
 
@@ -51,7 +53,7 @@ node tests/geometry.test.js
 node tests/quasi.test.js
 ```
 
-The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 2D and 3D, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners.
+The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 1D, 2D and 3D and by exactly one cell in slices of 4D to 6D tilings, slice cell volumes matching the space they fill, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners.
 
 ## Licence
 
