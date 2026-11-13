@@ -483,13 +483,15 @@
   toggle('qcut', 'cut');
   toggle('qsweep', 'sweep', () => { if (q.sweep) q.rev = Infinity; });
   $('qshift').onclick = () => { q.seed++; start(); };
-  for (const b of document.querySelectorAll('#qpre button')) b.onclick = () => {
+  $('qpre').addEventListener('change', (e) => {
+    const b = e.target.selectedOptions[0];
+    if (!b || !b.dataset.d) return;
     q.step = b.dataset.step === 'x' ? Q.STEPS : +b.dataset.step; qt.value = q.step;
     const d = +b.dataset.d;
     q.m = +b.dataset.m; q.d = 0; q.view = b.dataset.view || views(d)[0];
     setD(d);
     if (b.dataset.r) { setR(+b.dataset.r); start(); }
-  };
+  });
 
   // ---------- loop ----------
   // Building runs a few milliseconds per frame, so big dimensions never freeze the page.

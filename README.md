@@ -18,6 +18,10 @@ Live: https://godofecht.github.io/hyperkoob/
 
 A tilt slider swaps the golden ratio for the Fibonacci fractions 1/1, 2/1, 3/2, 5/3 and so on. Each gives a tiling that repeats: in 2D every 40, 105, 275, 720, 1885 or 4935 tiles. A second view shows where every corner lands in the hidden directions: on a few points when the tiling repeats, spread evenly over the window when it does not. Above 3D the slice is free of grid points while d is below Euler's totient of m (2m for even m), so 4D from 5D repeats and 4D from 7D does not.
 
+**What a fourth dimension could do to you.** Four demos, each plain geometry with a test behind it. A tesseract passes through a sealed box as a growing and shrinking solid, and a key leaves the box by a short trip in w. A right hand turned half way round in the plane of x and w comes back as a left hand. A trefoil knot is pulled straight into a loop, its strands passing each other at different heights in w. A creature in a plane has its organs on show from above, and a finger from above touches its heart while its neighbour sees only a wall.
+
+The page has one tab per section, and the address names the tab: `#shadows`, `#tiling`, `#never`, `#4d`.
+
 ## How large dimensions are drawn
 
 | Axes | 3D and 2D views |
@@ -36,7 +40,9 @@ The 2D view always draws the exact outline. Roundness is exact up to 120 axes in
 - `tile.js`: the tiling animation and honeycomb slices
 - `quasi.js`: cut-and-project tilings from the cube grid
 - `quasi-view.js`: the drawing and controls for those tilings
-- `tests/geometry.test.js`, `tests/quasi.test.js`: geometry checks
+- `fourd.js`, `fourd-view.js`: the fourth dimension demos
+- `tabs.js`: one section at a time
+- `tests/geometry.test.js`, `tests/quasi.test.js`, `tests/fourd.test.js`: geometry checks
 
 ## Run it
 
@@ -51,9 +57,10 @@ python3 -m http.server
 ```
 node tests/geometry.test.js
 node tests/quasi.test.js
+node tests/fourd.test.js
 ```
 
-The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 1D, 2D and 3D and by exactly one cell in slices of 4D to 6D tilings, slice cell volumes matching the space they fill, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners.
+The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 1D, 2D and 3D and by exactly one cell in slices of 4D to 6D tilings, slice cell volumes matching the space they fill, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners. For the fourth dimension: the tesseract's slices are a tetrahedron, a truncated tetrahedron and an octahedron and their volumes add up to its 4-volume, the half turn mirrors the hand while keeping every length, and the knot's strands cross in 3D but stay apart in 4D.
 
 ## Licence
 
