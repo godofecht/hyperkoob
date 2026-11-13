@@ -52,7 +52,9 @@
     for (const v of views(T.kind)) { const b = document.createElement('button'); b.textContent = VIEW_NAMES[v]; b.setAttribute('aria-pressed', v === st.view); b.onclick = () => { st.view = v; labels(); st.dirty = true; }; seg.appendChild(b); }
     // tiles within n steps of the first: steady growth when flat, exponential when hyperbolic
     const byDepth = []; for (const t of T.tiles) byDepth[t.depth] = (byDepth[t.depth] || 0) + 1;
-    $('cv-grow').textContent = byDepth.slice(1, 7).map((n) => n || 0).join(', ') + (T.kind === 'hyperbolic' ? ' ...' : '');
+    // only steps the drawing has in full; past that, tiles were left out as too small
+    const full = byDepth.slice(1, Math.min(8, T.cut)).map((n) => n || 0);
+    $('cv-grow').textContent = full.length ? full.join(', ') + (T.cut < Infinity ? ', ...' : '') : 'every step is cut short here';
   }
 
   function sizeCanvas() {

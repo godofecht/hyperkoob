@@ -44,7 +44,9 @@
     const first = opts.first ? { c: opts.first.c, v: opts.first.v, parity: opts.first.parity || 0, depth: 0 } : { c: [0, 0], v: Array.from({ length: p }, (_, j) => [r * Math.cos((2 * Math.PI * j) / p + Math.PI / p), r * Math.sin((2 * Math.PI * j) / p + Math.PI / p)]), parity: 0, depth: 0 };
     const key = (c) => (abs(c) > 1e4 ? 'inf' : Math.round(c[0] * 1e6) + ',' + Math.round(c[1] * 1e6));
     const seen = new Map([[key(first.c), first]]), out = [first], queue = [first];
+    let cut = Infinity; // the first step at which a tile was left out
     while (queue.length && out.length < max) {
+      if (out.length >= max - p) cut = Math.min(cut, queue[0].depth + 1);
       const t = queue.shift();
       for (let j = 0; j < p; j++) {
         const a = t.v[j], b = t.v[(j + 1) % p];
@@ -55,12 +57,12 @@
         const nt = { c: c || [1e9, 0], v, parity: 1 - t.parity, depth: t.depth + 1 };
         seen.set(kk, nt);
         // too small or too far to matter
-        if (k === 1) { const e = abs(sub(v[0], v[1])); if (e < (opts.minEdge || 0.002)) continue; }
-        if (k === 0 && abs(nt.c) > far) continue;
+        if (k === 1) { const e = abs(sub(v[0], v[1])); if (e < (opts.minEdge || 0.002)) { cut = Math.min(cut, nt.depth); continue; } }
+        if (k === 0 && abs(nt.c) > far) { cut = Math.min(cut, nt.depth); continue; }
         out.push(nt); queue.push(nt);
       }
     }
-    return { tiles: out, k, kind: kind(p, q), r };
+    return { tiles: out, k, kind: kind(p, q), r, cut };
   }
   // Gauss-Bonnet: a tile's area is how far its angle sum falls short of a
   // flat polygon's (or exceeds it, on the sphere), in units where |K| = 1.

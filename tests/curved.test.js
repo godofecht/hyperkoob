@@ -43,5 +43,14 @@ check('a hyperbolic circle of radius 10 is about 69,000 long', Math.abs(C.circum
   const M = C.mmul(C.moveMatrix(b, 1), C.moveMatrix(a, 1)), step = C.T(b, 1)(C.T(a, 1)(z));
   check('composed moves match single moves', C.abs(C.sub(C.mapply(M, z), step)) < 1e-12);
 }
+// 7. Counts of new tiles per step are only reported where complete: {4, 4} grows by 4 each step.
+{
+  const T = C.tiles(4, 4, { far: 7 }), by = []; for (const t of T.tiles) by[t.depth] = (by[t.depth] || 0) + 1;
+  check('{4, 4}: 4, 8, 12, 16 new tiles at steps 1 to 4', [4, 8, 12, 16].every((n, i) => by[i + 1] === n) && T.cut > 4, `${by.slice(1, 6).join(', ')}, complete below step ${T.cut}`);
+  const H = C.tiles(7, 3, { max: 2200, minEdge: 0.003 }), bh = []; for (const t of H.tiles) bh[t.depth] = (bh[t.depth] || 0) + 1;
+  const ok = bh.slice(2, H.cut).every((n, i) => n > 2 * bh[i + 1]);
+  check('{7, 3}: complete steps more than double each time', ok, `${bh.slice(1, H.cut).join(', ')}`);
+}
+
 console.log(failures ? `\n${failures} failed` : '\nall passed');
 process.exit(failures ? 1 : 0);
