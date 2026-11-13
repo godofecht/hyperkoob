@@ -56,5 +56,34 @@ function check(name, ok, detail) {
   check('every ray from outside stops at the wall', r.every((x) => x.what === 'wall'), `${r.filter((x) => x.what === 'wall').length}/200`);
 }
 
+// 6. The 4D maze: one path between any two cells, and going round walls needs w.
+{
+  const M = F.maze([4, 4, 4, 4], 7);
+  check('maze is a spanning tree of all 256 cells', M.open.size === 255 && M.path(0, 255) !== null);
+  const path = M.path(0, 255), wMoves = path.slice(1).filter((c, i) => M.pos(c)[3] !== M.pos(path[i])[3]).length;
+  check('the way out uses the fourth direction', wMoves > 0, `${path.length - 1} steps, ${wMoves} through w`);
+  // in the starting layer alone the goal's shadow cannot be reached
+  let reach = new Set([0]), q = [0];
+  while (q.length) { const c = q.shift(); for (const n of M.nbrs(c)) if (M.pos(n)[3] === 0 && M.passable(c, n) && !reach.has(n)) { reach.add(n); q.push(n); } }
+  check('the first layer alone does not reach every cell of that layer', reach.size < 64, `${reach.size} of 64`);
+}
+
+// 7. Hopf fibration: every two circles link once.
+{
+  const fib = (th, ph) => F.hopfFiber(Math.sin(th) * Math.cos(ph), Math.sin(th) * Math.sin(ph), Math.cos(th), 0.3, 160).map((p) => p.slice(0, 3));
+  const pairs = [[[0.7, 0.2], [1.9, 2.5]], [[1.2, 0], [1.2, 3.0]], [[0.4, 1], [2.6, 4]]];
+  const L = pairs.map(([a, b]) => F.linking(fib(...a), fib(...b)));
+  check('any two Hopf circles link once', L.every((x) => Math.abs(Math.abs(x) - 1) < 0.02), L.map((x) => x.toFixed(3)).join(', '));
+  // centre of the circle through three of its points
+  const P = fib(0.9, 1.1), [a, b, cc] = [P[0], P[53], P[107]];
+  const sub = (u, v) => u.map((x, i) => x - v[i]), dot = (u, v) => u.reduce((s0, x, i) => s0 + x * v[i], 0);
+  const crs = (u, v) => [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  const ab = sub(b, a), ac = sub(cc, a), n = crs(ab, ac), nn = dot(n, n);
+  const t1 = crs(n, ab).map((x) => x * dot(ac, ac)), t2 = crs(ac, n).map((x) => x * dot(ab, ab));
+  const c = a.map((x, i) => x + (t1[i] + t2[i]) / (2 * nn));
+  const rs = P.map((p) => Math.hypot(...sub(p, c)));
+  check('each Hopf fibre projects to a round circle', (Math.max(...rs) - Math.min(...rs)) / Math.max(...rs) < 1e-6);
+}
+
 console.log(failures ? `\n${failures} failed` : '\nall passed');
 process.exit(failures ? 1 : 0);

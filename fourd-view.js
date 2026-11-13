@@ -17,8 +17,6 @@
       text: 'A tesseract drifts along w through our space. Its slice appears inside the sealed box from nothing, changes shape and vanishes. Then the key is lifted a little way in w, which takes it out of our space altogether, and set down outside. The box is never opened.' },
     mirror: { secs: 14, name: 'Mirror you', sub: 'colour shows w: blue below, orange above',
       text: 'The hand turns in the plane of x and w. It trades its x for w, so in our space it flattens, then comes back the other way round. Every length in the hand stays fixed in 4D. A half turn makes a right hand into a left hand, which no turn in 3D can do.' },
-    knot: { secs: 15, name: 'Untie any knot', sub: 'colour shows w: blue below, orange above',
-      text: 'The rope is pulled straight from a trefoil knot to a plain loop. In 3D that would push the rope through itself. In 4D each part of the rope is lifted by a different amount in w, so where two strands meet in x, y and z they are apart in w. Every knot comes undone this way.' },
     see: { secs: 13, name: 'See inside you', sub: 'a world one dimension down',
       text: 'This creature lives in a plane. Its neighbour, looking from outside, sees only the wall of the house: the strip at the bottom. From above you see every organ inside its closed body. A finger from above touches its heart without breaking its skin. A 4D eye would look at you the way you look at this page.' },
   };
@@ -167,35 +165,6 @@
     ]);
   }
 
-  // ---------- untie any knot ----------
-  function knotS(u) { return u < 0.1 ? 0 : u < 0.55 ? ramp(u, 0.1, 0.55) : u < 0.75 ? 1 : u < 0.95 ? 1 - ramp(u, 0.75, 0.95) : 0; }
-  function drawKnot(c, w, h, dpr) {
-    const s = knotS(st.t), pts = F.rope(s, 240), cam = camera(w, h, 0.15, -0.02), { rot, proj } = cam;
-    const P = pts.map((p) => rot(p)), S2 = P.map(proj), N = pts.length;
-    const segs = [];
-    for (let i = 0; i < N; i++) { const j = (i + 1) % N; segs.push({ i, j, z: (P[i][2] + P[j][2]) / 2 }); }
-    segs.sort((a, b) => a.z - b.z);
-    c.lineCap = 'round';
-    for (const sg of segs) {
-      const a = S2[sg.i], b = S2[sg.j], wv = (pts[sg.i][3] + pts[sg.j][3]) / 2;
-      c.strokeStyle = theme.panel; c.lineWidth = 12 * dpr; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke();
-      c.strokeStyle = wColor(wv / 1.4, 1); c.lineWidth = 8 * dpr; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke();
-    }
-    const c3 = F.closest(pts, 3), c4 = F.closest(pts, 4);
-    if (c3.d < 0.4 && s > 0 && s < 1) {
-      const [i, j] = c3.at, m = proj(rot(pts[i].slice(0, 3).map((x, k) => (x + pts[j][k]) / 2)));
-      c.strokeStyle = theme.accent; c.lineWidth = 2 * dpr; c.beginPath(); c.arc(m[0], m[1], 18 * dpr, 0, 7); c.stroke();
-      c.fillStyle = theme.fg; c.font = `${12 * dpr}px "IBM Plex Mono", monospace`; c.textAlign = 'left';
-      c.fillText(`apart by ${Math.abs(pts[i][3] - pts[j][3]).toFixed(2)} in w`, m[0] + 22 * dpr, m[1] - 10 * dpr);
-    }
-    $('fd-foot').textContent = s === 0 ? 'a trefoil knot' : s === 1 ? 'a plain loop: the knot is gone' : c3.d < 0.4 ? 'the strands meet in 3D, but not in 4D' : 'pulling the knot straight';
-    setStats([
-      ['Rope', s === 0 ? 'trefoil knot' : s === 1 ? 'plain loop' : 'coming undone'],
-      ['Closest strands in 3D', c3.d.toFixed(3)],
-      ['Closest strands in 4D', c4.d.toFixed(3)],
-    ]);
-  }
-
   // ---------- see inside you ----------
   function drawSee(c, w, h, dpr) {
     const W = F.FLAT, u = st.t;
@@ -259,14 +228,24 @@
     ]);
   }
 
-  const DRAW = { reach: drawReach, mirror: drawMirror, knot: drawKnot, see: drawSee };
+  const DRAW = { reach: drawReach, mirror: drawMirror, see: drawSee };
+  // Other files add demos here: knots, the maze and the Hopf fibration.
+  const HOOKS = {};
+  window.FourDView = {
+    register(id, spec) { DEMOS[id] = spec; DRAW[id] = spec.draw; HOOKS[id] = spec; if (st.demo === id) setDemo(id); },
+    st, camera, wColor, hsl, poly, setStats, dot3, cross, sub3, LIGHT, theme: () => theme, clamp, smooth, lerp, ramp,
+  };
 
   function setDemo(d) {
+    if (!DEMOS[d]) return;
     st.demo = d; st.t = 0;
     for (const b of document.querySelectorAll('#fd-demo button')) b.setAttribute('aria-pressed', b.dataset.demo === d);
     $('fd-cap').textContent = DEMOS[d].name; $('fd-sub').textContent = DEMOS[d].sub; $('fd-text').textContent = DEMOS[d].text;
     $('fd-spin').hidden = d === 'see';
+    $('fd-trow').hidden = DEMOS[d].timed === false;
+    for (const el of document.querySelectorAll('.fd-opts')) el.hidden = el.dataset.for !== d;
     cv.classList.toggle('orbit', d !== 'see');
+    if (HOOKS[d] && HOOKS[d].onShow) HOOKS[d].onShow();
   }
   for (const b of document.querySelectorAll('#fd-demo button')) b.onclick = () => setDemo(b.dataset.demo);
   const playBtn = $('fd-play'), tIn = $('fd-t');
@@ -289,7 +268,7 @@
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
     if (st.visible) {
-      if (st.play) { st.t = (st.t + dt / DEMOS[st.demo].secs) % 1; tIn.value = st.t; }
+      if (st.play && DEMOS[st.demo].timed !== false) { st.t = (st.t + dt / DEMOS[st.demo].secs) % 1; tIn.value = st.t; }
       if (st.spin && !st.drag && st.demo !== 'see') st.yaw += dt * 0.15;
       const { w, h, dpr } = sizeCanvas();
       ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, w, h);

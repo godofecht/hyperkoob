@@ -148,5 +148,68 @@
     return out;
   }
 
-  g.FourD = { hull3, hullVolume, tesseractSlice, SLICE_BASIS, sliceName, HAND, turnXW, handedness, trefoil, circle, rope, closest, FLAT, retina };
+  // ---------- a 4D maze ----------
+  // Cells of a size[0] x size[1] x size[2] x size[3] grid, carved into a
+  // maze by a random depth-first walk, so every cell is reachable by exactly
+  // one path.
+  function maze(size = [4, 4, 4, 4], seed = 1) {
+    let x = seed * 2654435761 >>> 0 || 1;
+    const rnd = () => ((x ^= x << 13, x ^= x >>> 17, x ^= x << 5) >>> 0) / 4294967296;
+    const [A, B, C, Dd] = size, cells = A * B * C * Dd;
+    const id = (p) => p[0] + A * (p[1] + B * (p[2] + C * p[3]));
+    const pos = (i) => [i % A, Math.floor(i / A) % B, Math.floor(i / (A * B)) % C, Math.floor(i / (A * B * C))];
+    const nbrs = (i) => { const p = pos(i), out = []; for (let a = 0; a < 4; a++) for (const s of [-1, 1]) { const q = p.slice(); q[a] += s; if (q[a] >= 0 && q[a] < size[a]) out.push(id(q)); } return out; };
+    const open = new Set(), seen = new Uint8Array(cells), stack = [0];
+    const key = (a, b) => (a < b ? a + ',' + b : b + ',' + a);
+    seen[0] = 1;
+    while (stack.length) {
+      const c = stack[stack.length - 1], fresh = nbrs(c).filter((n) => !seen[n]);
+      if (!fresh.length) { stack.pop(); continue; }
+      const n = fresh[Math.floor(rnd() * fresh.length)];
+      open.add(key(c, n)); seen[n] = 1; stack.push(n);
+    }
+    const passable = (a, b) => open.has(key(a, b));
+    function path(from, to) {
+      const prev = new Int32Array(cells).fill(-1), q = [from]; prev[from] = from;
+      while (q.length) { const c = q.shift(); if (c === to) break; for (const n of nbrs(c)) if (prev[n] < 0 && passable(c, n)) { prev[n] = c; q.push(n); } }
+      if (prev[to] < 0) return null;
+      const out = [to]; while (out[0] !== from) out.unshift(prev[out[0]]);
+      return out;
+    }
+    return { size, cells, id, pos, nbrs, passable, path, open };
+  }
+
+  // ---------- the Hopf fibration ----------
+  // Each point (a, b, c) of the 2-sphere has a circle of the 3-sphere over
+  // it. Turn the 3-sphere by `turn` in the x-w plane, then project it
+  // stereographically from (0, 0, 0, 1) into 3D.
+  function hopfFiber(a, b, c, turn = 0, N = 120) {
+    const r1 = Math.sqrt(Math.max(0, (1 + c) / 2)), k = r1 > 1e-9 ? 1 / Math.sqrt(2 * (1 + c)) : 0;
+    const re2 = r1 > 1e-9 ? a * k : 1, im2 = r1 > 1e-9 ? b * k : 0;
+    const out = [], ct = Math.cos(turn), st = Math.sin(turn);
+    for (let i = 0; i < N; i++) {
+      const t = (2 * Math.PI * i) / N, e = [Math.cos(t), Math.sin(t)];
+      // e^{it} (r1, re2 + i im2)
+      let x = r1 * e[0], y = r1 * e[1], z = re2 * e[0] - im2 * e[1], w = re2 * e[1] + im2 * e[0];
+      [x, w] = [ct * x - st * w, st * x + ct * w];
+      const d = 1 - w;
+      out.push(Math.abs(d) < 1e-6 ? null : [x / d, y / d, z / d, w]);
+    }
+    return out;
+  }
+  // Gauss linking integral of two closed polylines, by the midpoint rule.
+  function linking(P, Q) {
+    let s = 0;
+    for (let i = 0; i < P.length; i++) {
+      const a = P[i], a2 = P[(i + 1) % P.length], da = sub(a2, a), ma = a.map((v, k) => (v + a2[k]) / 2);
+      for (let j = 0; j < Q.length; j++) {
+        const b = Q[j], b2 = Q[(j + 1) % Q.length], db = sub(b2, b), mb = b.map((v, k) => (v + b2[k]) / 2);
+        const r = sub(ma, mb), rl = norm(r);
+        s += dot(r, cross(da, db)) / (rl * rl * rl);
+      }
+    }
+    return s / (4 * Math.PI);
+  }
+
+  g.FourD = { hull3, hullVolume, tesseractSlice, SLICE_BASIS, sliceName, HAND, turnXW, handedness, trefoil, circle, rope, closest, FLAT, retina, maze, hopfFiber, linking };
 })(typeof window !== 'undefined' ? window : globalThis);

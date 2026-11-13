@@ -160,6 +160,15 @@ details.opts[open] > summary { border-color: var(--accent); }
 .sel:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .fd-text { margin: 0; font-size: 14px; color: var(--muted); min-height: 5.5em; }
 #c4 { aspect-ratio: 4 / 3; }
+#ce8 { aspect-ratio: 4 / 3; }
+#st-c4 { cursor: grab; }
+.sec-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+#nv-cube, #nv-e8 { display: grid; gap: 16px; }
+#nv-cube[hidden], #nv-e8[hidden] { display: none; }
+.mz-pad { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.mz-pad .mz-hid { border-color: var(--accent); }
+.fd-opts { display: grid; gap: 12px; }
+.fd-opts[hidden] { display: none; }
 .hd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; }
 .hd-card { display: grid; gap: 8px; align-content: start; }
 .hd-card h3 { font-family: var(--font-display); font-weight: 500; font-size: 17px; margin: 0; }
@@ -193,6 +202,7 @@ details.opts[open] > summary { border-color: var(--accent); }
       <button role="tab" data-tab="s-never" aria-selected="false">Never repeating</button>
       <button role="tab" data-tab="s-4d" aria-selected="false">The fourth dimension</button>
       <button role="tab" data-tab="s-high" aria-selected="false">High dimensions</button>
+      <button role="tab" data-tab="s-strings" aria-selected="false">String theory</button>
     </nav>
   </header>
 
@@ -353,9 +363,11 @@ details.opts[open] > summary { border-color: var(--accent); }
 
   <section class="panel" id="s-never" role="tabpanel" aria-labelledby="qc-h" hidden>
     <div class="sec-head">
-      <h2 id="qc-h">Shadows that never repeat</h2>
+      <div class="sec-row"><h2 id="qc-h">Shadows that never repeat</h2>
+        <div class="seg" role="group" aria-label="Cut from" id="nv-lattice"><span class="seglab">Cut from</span><button data-l="cube" aria-pressed="true">the cube grid</button><button data-l="e8" aria-pressed="false">E8</button></div></div>
       <p>Cut the grid of unit cubes in m dimensions with a flat slice of d dimensions. Keep the faces of the grid that lie close to the slice and cast them onto it. They fit together with no gaps. A 1D slice through the 2D grid at the golden ratio gives the Fibonacci chain. A 2D slice through the 5D grid gives the Penrose tiling. A 3D slice through the 6D grid gives a model of a real quasicrystal. Both numbers are yours to set. N. G. de Bruijn worked out the method in 1981.</p>
     </div>
+    <div id="nv-cube">
     <div class="qc-grid">
       <div class="view">
         <canvas id="cq" class="orbit" aria-label="Tiling cut from the cube grid"></canvas>
@@ -429,8 +441,48 @@ details.opts[open] > summary { border-color: var(--accent); }
         </div>
       </div>
     </div>
+    </div>
+    <div id="nv-e8" hidden>
+    <div class="qc-grid">
+      <div class="view">
+        <canvas id="ce8" class="orbit" aria-label="E8 and the Elser-Sloane quasicrystal"></canvas>
+        <div class="cap"><b>E8</b><span>the densest packing of spheres in 8D</span></div>
+        <div class="foot" id="e8foot"></div>
+      </div>
+      <div class="card tile-ctl">
+        <div class="row"><div class="top"><span class="lab">Show</span></div>
+          <div class="seg wrap-seg" role="group" aria-label="What to show" id="e8-view">
+            <button data-v="roots" aria-pressed="true">240 roots, flat</button>
+            <button data-v="coxeter" aria-pressed="false">Quasicrystal, flat</button>
+            <button data-v="shadow" aria-pressed="false">Quasicrystal, shadow in 3D</button>
+            <button data-v="slice" aria-pressed="false">Quasicrystal, 3D slice</button>
+          </div></div>
+        <div id="e8-3d" class="tile-ctl" hidden>
+          <div class="row"><div class="top"><span class="lab">Axes of the 4D space on screen</span>
+            <div class="seg" role="group" aria-label="Axes on screen" id="e8-axes"><button data-a="012" aria-pressed="true">1 2 3</button><button data-a="013" aria-pressed="false">1 2 4</button><button data-a="023" aria-pressed="false">1 3 4</button><button data-a="123" aria-pressed="false">2 3 4</button></div></div></div>
+          <div class="row"><div class="top"><label class="lab" for="e8-turn">Turn the third axis toward the hidden one</label></div>
+            <input id="e8-turn" type="range" min="0" max="180" step="1" value="0"></div>
+          <div class="row" id="e8-posrow" hidden><div class="top"><label class="lab" for="e8-pos">Slice position</label></div>
+            <input id="e8-pos" type="range" min="-1.5" max="1.5" step="0.01" value="0"></div>
+        </div>
+        <div id="e8-qc" class="tile-ctl" hidden>
+          <div class="row"><div class="top"><label class="lab" for="e8-win">Window radius</label><span class="hint" id="e8-winv">1.00</span></div>
+            <input id="e8-win" type="range" min="0.6" max="1.3" step="0.01" value="1"></div>
+          <div class="row"><div class="top"><label class="lab" for="e8-r">E8 points up to squared length</label><span class="hint" id="e8-rv">8</span></div>
+            <input id="e8-r" type="range" min="4" max="12" step="2" value="8"></div>
+        </div>
+        <div class="controls"><button class="btn" id="e8-bonds">Bonds</button><button class="btn" id="e8-spin">Spin view</button></div>
+        <dl>
+          <dt id="e8-l1"></dt><dd id="e8-v1"></dd>
+          <dt id="e8-l2"></dt><dd id="e8-v2"></dd>
+          <dt id="e8-l3"></dt><dd id="e8-v3"></dd>
+        </dl>
+      </div>
+    </div>
+    </div>
     <details class="notes">
       <summary>How it works</summary>
+      <p><b>E8.</b> E8 is the lattice in 8 dimensions where unit spheres pack most densely, proved by Maryna Viazovska in 2016. Its 240 shortest vectors, the roots, seen in the plane where its Coxeter element turns everything by 12 degrees, sit on 8 rings of 30: the picture shows them with an edge between every two roots at 60 degrees. R^8 also splits into two 4D halves on which E8 casts copies of the 600-cell, sized in the golden ratio. Keeping only the E8 points whose shadow in the second half lies in a small window, and looking at the first half, gives the 4D quasicrystal of Veit Elser and Neil Sloane (1987). Here a ball stands in for their window, which was a 600-cell. The 4D points can be cast into 3D, cut by a 3D slice, or flattened onto the Coxeter plane.</p>
       <p><b>Views.</b> Tilings of 1, 2 or 3 dimensions are drawn whole. From 4 up there are two ways in. A 3D slice cuts the tiling with a flat 3D space, and every cell it meets becomes a convex solid; Sweep moves the slice through the extra dimensions. A shadow casts the whole tiling into 3D or 2D with the same diagonal frames as the views at the top of the page, so the tiles overlap. A 3D tiling can be cast into 2D the same way.</p>
       <p><b>Why it repeats or not.</b> If the slice passes through a second grid point, it passes through a whole lattice of them, and the tiling repeats along that lattice. Penrose's slice is tilted by the golden ratio, which is irrational, so it meets no grid point but the origin. The tilt slider swaps the golden ratio for 1/1, 2/1, 3/2, 5/3 and so on, ratios of Fibonacci numbers. In 2D each fraction gives a tiling that repeats every 40, 105, 275, 720, 1,885 or 4,935 tiles: five times every second Fibonacci number. The Fibonacci chain at 5/3 repeats every 8 tiles. For other dimensions the slider rounds the slice to fractions with a growing denominator.</p>
       <p><b>Higher slices.</b> From 4 dimensions up the slice is built from the conjugate stars of the m directions. It stays free of grid points, and the tiling never repeats, while d is below Euler's totient of m (of 2m for even m). At the totient the slice takes in a whole rational block and the tiling repeats: 4D from 5D gives the honeycomb of the section above.</p>
@@ -446,7 +498,7 @@ details.opts[open] > summary { border-color: var(--accent); }
     </div>
     <div class="qc-grid">
       <div class="view">
-        <canvas id="c4" class="orbit" aria-label="Fourth dimension demo"></canvas>
+        <canvas id="c4" class="orbit" tabindex="0" aria-label="Fourth dimension demo"></canvas>
         <div class="cap"><b id="fd-cap">Reach inside</b><span id="fd-sub"></span></div>
         <div class="foot" id="fd-foot"></div>
       </div>
@@ -456,9 +508,46 @@ details.opts[open] > summary { border-color: var(--accent); }
           <button data-demo="mirror" aria-pressed="false">Mirror you</button>
           <button data-demo="knot" aria-pressed="false">Untie any knot</button>
           <button data-demo="see" aria-pressed="false">See inside you</button>
+          <button data-demo="maze" aria-pressed="false">4D maze</button>
+          <button data-demo="hopf" aria-pressed="false">Hopf fibration</button>
         </div>
         <p class="fd-text" id="fd-text"></p>
-        <div class="row">
+        <div class="fd-opts tile-ctl" data-for="knot" hidden>
+          <div class="row"><div class="top"><label class="lab" for="kn-kind">Knot</label>
+            <select id="kn-kind" class="sel"><option value="trefoil">Trefoil</option><option value="figure8">Figure-eight</option><option value="cinquefoil">Cinquefoil</option><option value="t34">(3, 4) torus knot</option><option value="t35">(3, 5) torus knot</option><option value="unknot">No knot</option><option value="torus">Torus knot (p, q)</option></select></div>
+            <div class="top" id="kn-pq" hidden><span class="lab">p and q</span><span><input class="numsm" id="kn-p" type="number" min="1" step="1" value="2" aria-label="p"> <input class="numsm" id="kn-q" type="number" min="1" step="1" value="7" aria-label="q"></span></div>
+          </div>
+          <div class="row"><div class="top"><label class="lab" for="kn-lift">Lift in w during each move</label><span class="hint" id="kn-liftv">1.2</span></div>
+            <input id="kn-lift" type="range" min="0" max="2" step="0.1" value="1.2"></div>
+          <div class="row"><div class="top"><span class="lab">Axes on screen</span>
+            <div class="seg" role="group" aria-label="Axes on screen" id="kn-axes"><button data-axes="012" aria-pressed="true">x y z</button><button data-axes="013" aria-pressed="false">x y w</button><button data-axes="023" aria-pressed="false">x z w</button><button data-axes="123" aria-pressed="false">y z w</button></div></div></div>
+          <div class="row"><div class="top"><label class="lab" for="kn-tilt" id="kn-tiltl">Tilt z toward w</label><span class="hint" id="kn-tiltv">0°</span></div>
+            <input id="kn-tilt" type="range" min="0" max="90" step="1" value="0"></div>
+          <div class="row"><div class="top"><span class="lab">Diagram seen along</span>
+            <div class="seg" role="group" aria-label="Diagram seen along" id="kn-diag"><button data-c="2" aria-pressed="true">z</button><button data-c="1" aria-pressed="false">y</button><button data-c="0" aria-pressed="false">x</button></div></div></div>
+          <div class="controls"><button class="btn" id="kn-now" aria-pressed="false">Without w</button></div>
+        </div>
+        <div class="fd-opts tile-ctl" data-for="maze" hidden>
+          <div class="row"><div class="top"><span class="lab">Hidden axis</span>
+            <div class="seg" role="group" aria-label="Hidden axis" id="mz-hide"><button data-h="0" aria-pressed="false">x</button><button data-h="1" aria-pressed="false">y</button><button data-h="2" aria-pressed="false">z</button><button data-h="3" aria-pressed="true">w</button></div></div></div>
+          <div class="mz-pad" id="mz-moves">
+            <button class="btn" data-i="0" data-d="-1"></button><button class="btn" data-i="0" data-d="1"></button>
+            <button class="btn" data-i="1" data-d="-1"></button><button class="btn" data-i="1" data-d="1"></button>
+            <button class="btn" data-i="2" data-d="-1"></button><button class="btn" data-i="2" data-d="1"></button>
+            <button class="btn mz-hid" data-i="3" data-d="-1"></button><button class="btn mz-hid" data-i="3" data-d="1"></button>
+          </div>
+          <p class="hint" style="margin:0">Keys, with the picture focused: arrows, Page Up and Page Down, and Q and E for the hidden axis.</p>
+          <div class="controls"><button class="btn" id="mz-solve">Show the way out</button><button class="btn" id="mz-new">New maze</button></div>
+        </div>
+        <div class="fd-opts tile-ctl" data-for="hopf" hidden>
+          <div class="row"><div class="top"><label class="lab" for="hp-n">Circles</label><span class="hint" id="hp-nv">24</span></div>
+            <input id="hp-n" type="range" min="2" max="72" step="1" value="24"></div>
+          <div class="row"><div class="top"><span class="lab">Chosen from</span>
+            <div class="seg" role="group" aria-label="Which circles" id="hp-pat"><button data-p="ring" aria-pressed="false">one ring</button><button data-p="rings" aria-pressed="true">three rings</button><button data-p="spiral" aria-pressed="false">a spiral</button></div></div></div>
+          <div class="row"><div class="top"><label class="lab" for="hp-turn">Turn in the x-w plane (Play turns it)</label></div>
+            <input id="hp-turn" type="range" min="0" max="360" step="1" value="0"></div>
+        </div>
+        <div class="row" id="fd-trow">
           <div class="top"><label class="lab" for="fd-t">Time</label><button class="btn" id="fd-play" aria-pressed="true">Pause</button></div>
           <input id="fd-t" type="range" min="0" max="1" step="0.001" value="0">
         </div>
@@ -533,6 +622,59 @@ details.opts[open] > summary { border-color: var(--accent); }
       <p><b>The vanishing ball.</b> The unit ball's volume is pi^(n/2) / Gamma(n/2 + 1). It grows up to n = 5.2569, then falls faster than any exponential. Its share of the cube around it, divided by 2^n, falls faster still. Nearly all of a high cube is in its corners.</p>
       <p><b>The sphere that leaves its box.</b> In a box of side 4 put a sphere of radius 1 in each of the 2^n corners, and a sphere in the middle touching them all. Its radius is sqrt(n) - 1: a corner sphere's centre is sqrt(n) from the middle. The walls are 2 from the middle. At n = 9 the middle sphere touches the walls, and from n = 10 it reaches past them, though it only touches spheres inside the box. The picture puts these distances on one page to scale.</p>
       <p><b>Equally far.</b> The distance between random points of the unit cube is the square root of a sum of n small terms, so it settles near sqrt(n/6) with a spread that grows only like a constant. The gap between nearest and farthest shrinks to nothing, which is why searching for nearest neighbours stops working in high dimensions. Up to 30 million coordinates the panel samples real points; past that it draws from the normal limit, and says so.</p>
+    </details>
+  </section>
+
+  <section class="panel" id="s-strings" role="tabpanel" aria-labelledby="st-h" hidden>
+    <div class="sec-top">
+      <div class="sec-head">
+        <h2 id="st-h">Where string theory hides its dimensions</h2>
+        <p>String theory says space has 9 dimensions, or 10 with time, and that we see 3 because the other 6 are curled up too small to notice. No experiment has confirmed it. What follows is the geometry the idea rests on, and every number here is computed live.</p>
+      </div>
+    </div>
+    <div class="row"><div class="top"><label class="lab" for="st-R">Radius of the hidden circle, in string lengths</label><span class="hint" id="st-Rv">1</span></div>
+      <input id="st-R" type="range" min="-1.5" max="1.5" step="0.001" value="0"></div>
+    <div class="hd-grid">
+      <div class="card hd-card">
+        <h3>A dimension curled up small</h3>
+        <canvas id="st-c1" aria-label="A dimension curled up small"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="st-zoom">Zoom in</label></div><input id="st-zoom" type="range" min="0" max="1" step="0.001" value="0.15"></div>
+        <div class="hd-read"><span class="lab">From here it looks like</span><b id="st-v1"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>Waves that fit around it</h3>
+        <canvas id="st-c2" aria-label="Waves that fit around it"></canvas>
+        <div class="hd-read"><span class="lab">Cost of the first wave</span><b id="st-v2"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>T-duality: R and 1/R are the same</h3>
+        <canvas id="st-c3" aria-label="T-duality: R and 1/R are the same"></canvas>
+        <div class="hd-read"><span class="lab">String levels at R and at 1/R</span><b id="st-v3"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>A Calabi-Yau cross-section</h3>
+        <canvas id="st-c4" aria-label="A Calabi-Yau cross-section"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="st-n">Degree n</label><span class="hint" id="st-nv">5</span></div><input id="st-n" type="range" min="2" max="8" step="1" value="5"></div>
+        <div class="row"><div class="top"><label class="lab" for="st-alpha">Projection from 4D: mix of the two imaginary parts</label><span class="hint" id="st-alphav">45°</span></div><input id="st-alpha" type="range" min="0" max="180" step="1" value="45"></div>
+        <div class="controls"><button class="btn" id="st-spin">Spin view</button></div>
+        <div class="hd-read"><span class="lab">Shape</span><b id="st-v4"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>Why 26, and why 10</h3>
+        <div class="row"><div class="top"><label class="lab" for="st-D">Dimensions of spacetime, D</label><input class="numsm" id="st-D" type="number" step="1" value="26"></div></div>
+        <div class="hd-read"><span class="lab">Plain strings</span><b id="st-v5a"></b></div>
+        <div class="hd-read"><span class="lab">Superstrings</span><b id="st-v5b"></b></div>
+        <div class="row"><div class="top"><label class="lab" for="st-eps">1 + 2 + 3 + ..., damped by e^(-n e), as e shrinks</label></div><input id="st-eps" type="range" min="-3" max="0" step="0.01" value="-1"></div>
+        <div class="hd-read"><span class="lab">Damped sum, less 1/e^2</span><b id="st-v5c"></b></div>
+      </div>
+    </div>
+    <details class="notes">
+      <summary>How it works</summary>
+      <p><b>Curled up.</b> A garden hose seen from far away is a line. Up close every point of the line is a small circle, and an ant can walk round it. Theodor Kaluza (1921) and Oskar Klein (1926) proposed that space could have such a circle at every point, too small to see.</p>
+      <p><b>Waves.</b> A wave going round a circle of radius R has to fit a whole number n of wavelengths, so its momentum round the circle is n/R. To us that momentum shows up as mass. Shrink the circle and even the first wave, n = 1, costs more energy than we can supply, so the dimension leaves no trace in everyday physics. The ladder shows the levels n/R under a fixed budget.</p>
+      <p><b>T-duality.</b> A closed string on the circle can also wind round it w times, which costs energy w R in string units. Its energy, leaving out its vibrations, is the square root of (n/R)^2 + (w R)^2. Swap R for 1/R and n for w and nothing changes: a string cannot tell a circle of radius R from one of radius 1/R. The plot shows the levels against R on a log scale; the solid line is your R, the dashed line 1/R, and the picture is symmetric about R = 1.</p>
+      <p><b>Calabi-Yau.</b> String theory needs its 6 hidden dimensions to form a Calabi-Yau space. The one most used as an example is the quintic, the points of complex projective 4-space where z1^5 + ... + z5^5 = 0. The surface drawn here is the curve z1^n + z2^n = 1 in two complex dimensions, a slice of that kind of shape, following Andrew Hanson's construction (1994). It lives in 4D; the slider picks how its two imaginary parts are mixed into the third axis, which is a choice of projection from 4D to 3D.</p>
+      <p><b>26 and 10.</b> Quantum mechanics gives each of the D - 2 directions a string can vibrate in a zero-point energy of half of 1 + 2 + 3 + ..., which is -1/24 once the infinite part is removed: the panel shows the damped sum settling to -1/12 after subtracting 1/e^2. For the string's spectrum to respect special relativity the total must be -1, so (D - 2)/24 = 1 and D = 26. Superstrings add partners whose half-integer modes give -1/48 per direction; the requirement becomes (D - 2)/16 = 1/2, so D = 10.</p>
     </details>
   </section>
 </div>
@@ -1245,8 +1387,14 @@ postMessage({ key, n: S.n, volume: S.volume, cells: cells.map((c) => ({ faces: c
 <script src="quasi-view.js"></script>
 <script src="fourd.js"></script>
 <script src="fourd-view.js"></script>
+<script src="knots.js"></script>
+<script src="fourd-more.js"></script>
 <script src="highd.js"></script>
 <script src="highd-view.js"></script>
+<script src="e8.js"></script>
+<script src="e8-view.js"></script>
+<script src="strings.js"></script>
+<script src="strings-view.js"></script>
 <script src="tabs.js"></script>
 </body>
 </html>
