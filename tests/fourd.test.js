@@ -85,5 +85,13 @@ function check(name, ok, detail) {
   check('each Hopf fibre projects to a round circle', (Math.max(...rs) - Math.min(...rs)) / Math.max(...rs) < 1e-6);
 }
 
+{
+  const nm = (V, sides) => F.sliceName(V, sides);
+  check('slices are named by their face shapes', nm(6, [3, 3, 4, 4, 4]) === 'triangular prism' && nm(12, [3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3]) === 'cuboctahedron' && nm(12, [3, 3, 3, 3, 6, 6, 6, 6]) === 'truncated tetrahedron' && nm(12, [4, 4, 4, 4, 4, 4, 6, 6]) === 'hexagonal prism');
+  // the tesseract's middle corner-first slice really is an octahedron
+  const H = F.tesseractSlice(2, 0, F.SLICE_BASIS);
+  check("the tesseract's corner-first middle slice: 8 triangles", F.sliceName(H.V.length, H.faces.map((f) => f.idx.length)) === 'octahedron');
+}
+
 console.log(failures ? `\n${failures} failed` : '\nall passed');
 process.exit(failures ? 1 : 0);

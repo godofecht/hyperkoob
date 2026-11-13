@@ -139,6 +139,44 @@
     return 4 - rank;
   }
 
+  // An orthonormal frame with n last: three directions square to n.
+  function frameFor(n) {
+    const l = Math.hypot(...n), u = n.map((x) => x / l), out = [];
+    for (let k = 0; k < 4 && out.length < 3; k++) {
+      const e = [0, 0, 0, 0]; e[k] = 1;
+      let d = e[0] * u[0] + e[1] * u[1] + e[2] * u[2] + e[3] * u[3];
+      const r = e.map((x, i) => x - d * u[i]);
+      for (const b of out) { d = r.reduce((a, x, i) => a + x * b[i], 0); for (let i = 0; i < 4; i++) r[i] -= d * b[i]; }
+      const rl = Math.hypot(...r); if (rl > 1e-6) out.push(r.map((x) => x / rl));
+    }
+    return { basis: out, n: u };
+  }
+  // The slice of a solid {V, E} by the hyperplane n . x = t: the points
+  // where edges cross it, in the frame's three directions.
+  function sliceAt(M, n, t, basis) {
+    const pts = [], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+    for (const [a, b] of M.E) {
+      const fa = dot(M.V[a], n) - t, fb = dot(M.V[b], n) - t;
+      if (fa * fb > 0 || Math.abs(fa - fb) < 1e-12) continue;
+      const s = fa / (fa - fb), p = M.V[a].map((x, k) => x + s * (M.V[b][k] - x)), q = basis.map((e) => dot(e, p));
+      if (!pts.some((o) => Math.abs(o[0] - q[0]) + Math.abs(o[1] - q[1]) + Math.abs(o[2] - q[2]) < 1e-7)) pts.push(q);
+    }
+    return pts;
+  }
+  // Which way a solid meets the slice first: a corner, the middle of an
+  // edge, or a cell, the direction where the solid reaches least far.
+  let dualCache = null;
+  function approach(M, how) {
+    const norm = (v) => { const l = Math.hypot(...v); return v.map((x) => x / l); };
+    if (how === 'corner') return norm(M.V[0]);
+    if (how === 'edge') return norm(M.V[M.E[0][0]].map((x, k) => x + M.V[M.E[0][1]][k]));
+    if (!dualCache) dualCache = [...cell600().V, ...cell120().V, ...tesseract().V, ...cell16().V, ...cell24().V].map(norm);
+    const cands = [...dualCache, ...M.V.map((v) => norm(v.map((x) => -x)))];
+    let best = null, bh = Infinity;
+    for (const c of cands) { let h = -Infinity; for (const v of M.V) h = Math.max(h, v[0] * c[0] + v[1] * c[1] + v[2] * c[2] + v[3] * c[3]); if (h < bh - 1e-9) { bh = h; best = c; } }
+    return best;
+  }
+
   const OBJECTS = {
     cell5: { name: '5-cell', make: cell5, cells: 5, faces: 10 },
     tesseract: { name: 'tesseract', make: tesseract, cells: 8, faces: 24 },
@@ -151,5 +189,5 @@
     net: { name: 'tesseract net', make: (f) => net(f), folding: true },
   };
 
-  g.Solids4 = { PHI, OBJECTS, PLANES, PLANE_NAMES, rotation, apply, fixedDim, edgesByLength, net, klein, kleinPoint, cliffordTorus, cell5, tesseract, cell16, cell24, cell120, cell600, dist };
+  g.Solids4 = { frameFor, sliceAt, approach, PHI, OBJECTS, PLANES, PLANE_NAMES, rotation, apply, fixedDim, edgesByLength, net, klein, kleinPoint, cliffordTorus, cell5, tesseract, cell16, cell24, cell120, cell600, dist };
 })(typeof window !== 'undefined' ? window : globalThis);

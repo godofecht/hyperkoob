@@ -69,5 +69,17 @@ check('the 600-cell has 600 tetrahedra', S.cell120().tets === 600);
   const lens = T.E.map(([a, b]) => S.dist(T.V[a], T.V[b]));
   check('Clifford torus: every grid edge the same length, as on a flat sheet', Math.max(...lens) - Math.min(...lens) < 1e-12);
 }
+// 6. Slicing along any direction.
+{
+  const T = S.tesseract(), c = S.approach(T, 'corner'), f = S.frameFor(c);
+  check('corner first: the tesseract meets the slice at a tetrahedron, then an octahedron', S.sliceAt(T, f.n, -0.7, f.basis).length === 4 && S.sliceAt(T, f.n, 0, f.basis).length === 6);
+  const cell = S.approach(T, 'cell'), g2 = S.frameFor(cell);
+  check('cell first: the tesseract slices as a cube all the way through', [-0.4, 0, 0.3].every((t) => S.sliceAt(T, g2.n, t, g2.basis).length === 8));
+  const s16 = S.cell16(), n16 = S.approach(s16, 'cell'), h16 = Math.max(...s16.V.map((v) => v.reduce((a, x, i) => a + x * n16[i], 0)));
+  check('cell first: the 16-cell meets the slice along a tetrahedron, 4 corners at once', s16.V.filter((v) => Math.abs(v.reduce((a, x, i) => a + x * n16[i], 0) - h16) < 1e-9).length === 4);
+  const s600 = S.cell600(), h = S.approach(s600, 'cell'), sup = Math.max(...s600.V.map((v) => v.reduce((a, x, i) => a + x * h[i], 0)));
+  check("cell first finds the 600-cell's tetrahedra: its 4 farthest corners tie", s600.V.filter((v) => Math.abs(v.reduce((a, x, i) => a + x * h[i], 0) - sup) < 1e-9).length === 4);
+}
+
 console.log(failures ? `\n${failures} failed` : '\nall passed');
 process.exit(failures ? 1 : 0);

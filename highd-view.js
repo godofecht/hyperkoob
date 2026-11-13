@@ -6,7 +6,7 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   const fmt = (x, d = 0) => x.toLocaleString('en-US', { maximumFractionDigits: d, minimumFractionDigits: d });
-  const st = { n: 3, play: false, v: Math.log10(3), dist: null, distN: 0, dirty: true };
+  const st = { eps: 0.01, count: 300, n: 3, play: false, v: Math.log10(3), dist: null, distN: 0, dirty: true };
 
   let theme = {};
   function readTheme() {
@@ -43,8 +43,8 @@
 
   function drawPeel() {
     const { c, w, h, dpr } = canvas('hd-c1'), n = st.n;
-    curve(c, w, h, dpr, (r) => D.radiusDensity(n, r), 0, 1, { band: [0.99, 1], ticks: [[0, 'centre'], [0.5, '0.5'], [1, 'surface']] });
-    const s = D.shell(n, 0.01);
+    curve(c, w, h, dpr, (r) => D.radiusDensity(n, r), 0, 1, { band: [1 - st.eps, 1], ticks: [[0, 'centre'], [0.5, '0.5'], [1, 'surface']] });
+    const s = D.shell(n, st.eps);
     $('hd-v1').textContent = s > 0.99999 ? '> 99.999%' : `${fmt(100 * s, s > 0.999 ? 3 : 1)}%`;
   }
   function drawAngles() {
@@ -99,10 +99,10 @@
   }
   function drawDist() {
     const { c, w, h, dpr } = canvas('hd-c5'), n = st.n;
-    if (st.distN !== n) {
+    if (st.distN !== n || st.distCount !== st.count) {
       // exact samples while affordable; past that, the normal limit of the
       // squared distance (a sum of n terms with mean 1/6, variance 7/180)
-      const count = 300;
+      const count = st.count; st.distCount = count;
       if (n * count <= 3e7) { st.dist = D.distances(n, count); st.distHow = 'sampled'; }
       else {
         let x = 12345; const r = () => ((x ^= x << 13, x ^= x >>> 17, x ^= x << 5) >>> 0) / 4294967296;
@@ -123,7 +123,7 @@
     c.textAlign = 'right'; c.fillText('2x', w - pad.r, h - pad.b + 5 * dpr);
     const k = D.contrast(ds);
     $('hd-v5').textContent = `${fmt(100 * k, k < 0.1 ? 2 : 0)}% farther`;
-    $('hd-f5').textContent = `300 random points of the unit cube, ${st.distHow}`;
+    $('hd-f5').textContent = `${st.count.toLocaleString('en-US')} random points of the unit cube, ${st.distHow}`;
   }
 
   function drawAll() {
@@ -152,6 +152,8 @@
   num.addEventListener('change', commit);
   num.addEventListener('keydown', (e) => { if (e.key === 'Enter') { commit(); num.blur(); } });
   for (const b of document.querySelectorAll('#hd-ticks button')) b.onclick = () => setN(+b.dataset.n);
+  $('hd-eps').addEventListener('input', () => { st.eps = 10 ** +$('hd-eps').value; $('hd-l1').textContent = `Volume in the outer ${+(st.eps * 100).toPrecision(2)}%`; st.dirty = true; });
+  $('hd-cnt').addEventListener('input', () => { st.count = Math.round(10 ** +$('hd-cnt').value); $('hd-cntv').textContent = st.count.toLocaleString('en-US'); st.dirty = true; });
   const playBtn = $('hd-play');
   const showPlay = () => { playBtn.setAttribute('aria-pressed', st.play); playBtn.textContent = st.play ? 'Pause' : 'Play'; };
   playBtn.onclick = () => { st.play = !st.play; if (st.play && st.v >= 4.99) st.v = 0; showPlay(); };

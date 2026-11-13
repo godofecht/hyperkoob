@@ -67,7 +67,18 @@
     const r = [[1, 1, -1, -1], [1, -1, 1, -1], [1, -1, -1, 1]];
     return r.map((v) => v.map((x) => x / 2));
   })();
-  function sliceName(nv) { return nv === 0 ? 'nothing' : nv === 1 ? 'a point' : nv === 4 ? 'tetrahedron' : nv === 6 ? 'octahedron' : nv === 12 ? 'truncated tetrahedron' : `${nv}-corner solid`; }
+  // Name a convex solid by the shapes of its faces: sides of each face,
+  // counted. Corners and faces alone are not enough: a truncated
+  // tetrahedron and a hexagonal prism both have 12 corners and 8 faces.
+  const NAMES = { '3x4': 'tetrahedron', '3x8': 'octahedron', '3x2 4x3': 'triangular prism', '3x4 4x1': 'square pyramid', '4x6': 'box', '3x4 6x4': 'truncated tetrahedron', '4x6 6x2': 'hexagonal prism', '3x8 4x6': 'cuboctahedron', '4x12': 'twelve-sided rhombic solid', '4x6 6x8': 'truncated octahedron', '5x12': 'dodecahedron', '3x20': 'icosahedron', '4x5 5x2': 'pentagonal prism', '3x8 6x4': 'eight-faced solid of triangles and hexagons' };
+  function sliceName(nv, faceSides) {
+    if (nv === 0) return 'nothing'; if (nv === 1) return 'a point';
+    if (!faceSides) return nv === 4 ? 'tetrahedron' : nv === 6 ? 'octahedron' : nv === 12 ? 'truncated tetrahedron' : `${nv}-corner solid`;
+    const count = {}; for (const k of faceSides) count[k] = (count[k] || 0) + 1;
+    const key = Object.keys(count).map(Number).sort((x, y) => x - y).map((k) => `${k}x${count[k]}`).join(' ');
+    return NAMES[key] || `${nv} corners, ${faceSides.length} faces`;
+  }
+
 
   // A right hand made of boxes: palm, four fingers, and a thumb on the -x
   // side. Each box is [x0, y0, z0, x1, y1, z1] in hand coordinates.
@@ -82,11 +93,11 @@
     [-0.45, -1.45, -0.18, 0.45, -0.92, 0.18],        // wrist
   ];
   // Turn by theta in the x-w plane: (x, y, z, 0) -> (x cos, y, z, x sin).
-  function turnXW(p, theta) { return [p[0] * Math.cos(theta), p[1], p[2], p[0] * Math.sin(theta)]; }
+  function turnXW(p, theta, axis = 0) { const q = [p[0], p[1], p[2], p[3] || 0]; q[3] = p[axis] * Math.sin(theta); q[axis] = p[axis] * Math.cos(theta); return q; }
   // Handedness of a frame after the turn, seen in 3D: sign of det of the
   // images of the x, y, z unit vectors with w dropped.
-  function handedness(theta) {
-    const [a, b, c] = [[1, 0, 0], [0, 1, 0], [0, 0, 1]].map((e) => turnXW(e, theta).slice(0, 3));
+  function handedness(theta, axis = 0) {
+    const [a, b, c] = [[1, 0, 0], [0, 1, 0], [0, 0, 1]].map((e) => turnXW(e, theta, axis).slice(0, 3));
     const d = a[0] * (b[1] * c[2] - b[2] * c[1]) - a[1] * (b[0] * c[2] - b[2] * c[0]) + a[2] * (b[0] * c[1] - b[1] * c[0]);
     return Math.abs(d) < 1e-9 ? 0 : Math.sign(d);
   }

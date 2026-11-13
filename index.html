@@ -161,6 +161,8 @@ details.opts[open] > summary { border-color: var(--accent); }
 .fd-text { margin: 0; font-size: 14px; color: var(--muted); min-height: 5.5em; }
 #c4 { aspect-ratio: 4 / 3; }
 #ce8 { aspect-ratio: 4 / 3; }
+#ccv { aspect-ratio: 1 / 1; }
+#ccirc { display: block; width: 100%; height: 220px; }
 #st-c4 { cursor: grab; }
 .sec-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
 #nv-cube, #nv-e8 { display: grid; gap: 16px; }
@@ -205,6 +207,7 @@ details.opts[open] > summary { border-color: var(--accent); }
       <button role="tab" data-tab="s-never" aria-selected="false">Never repeating</button>
       <button role="tab" data-tab="s-4d" aria-selected="false">The fourth dimension</button>
       <button role="tab" data-tab="s-high" aria-selected="false">High dimensions</button>
+      <button role="tab" data-tab="s-curved" aria-selected="false">Curved space</button>
       <button role="tab" data-tab="s-strings" aria-selected="false">String theory</button>
     </nav>
   </header>
@@ -516,6 +519,22 @@ details.opts[open] > summary { border-color: var(--accent); }
           <button data-demo="solids" aria-pressed="false">Rotate in 4D</button>
         </div>
         <p class="fd-text" id="fd-text"></p>
+        <div class="fd-opts tile-ctl" data-for="reach">
+          <div class="row"><div class="top"><label class="lab" for="rc-obj">What passes through</label>
+            <select id="rc-obj" class="sel"><option value="tesseract">Tesseract</option><option value="cell5">5-cell</option><option value="cell16">16-cell</option><option value="cell24">24-cell</option><option value="cell600">600-cell</option><option value="cell120">120-cell</option><option value="ball">4D ball</option></select></div></div>
+          <div class="row" id="rc-howrow"><div class="top"><span class="lab">It meets our space</span>
+            <div class="seg" role="group" aria-label="Which part first" id="rc-how"><button data-h="corner" aria-pressed="true">corner first</button><button data-h="edge" aria-pressed="false">edge first</button><button data-h="cell" aria-pressed="false">cell first</button></div></div></div>
+          <div class="row"><div class="top"><span class="lab">Tilt it toward w, from x, y and z</span></div>
+            <div class="s4-planes">
+              <label class="s4-p"><span>x-w</span><input id="rc-t0" type="range" min="-90" max="90" step="1" value="0" aria-label="Tilt in x-w"><b id="rc-tv0">0°</b></label>
+              <label class="s4-p"><span>y-w</span><input id="rc-t1" type="range" min="-90" max="90" step="1" value="0" aria-label="Tilt in y-w"><b id="rc-tv1">0°</b></label>
+              <label class="s4-p"><span>z-w</span><input id="rc-t2" type="range" min="-90" max="90" step="1" value="0" aria-label="Tilt in z-w"><b id="rc-tv2">0°</b></label>
+            </div></div>
+        </div>
+        <div class="fd-opts tile-ctl" data-for="mirror" hidden>
+          <div class="row"><div class="top"><span class="lab">Turn in the plane of w and</span>
+            <div class="seg" role="group" aria-label="Turning plane" id="mr-axis"><button data-a="0" aria-pressed="true">x</button><button data-a="1" aria-pressed="false">y</button><button data-a="2" aria-pressed="false">z</button></div></div></div>
+        </div>
         <div class="fd-opts tile-ctl" data-for="knot" hidden>
           <div class="row"><div class="top"><label class="lab" for="kn-kind">Knot</label>
             <select id="kn-kind" class="sel"><option value="trefoil">Trefoil</option><option value="figure8">Figure-eight</option><option value="cinquefoil">Cinquefoil</option><option value="t34">(3, 4) torus knot</option><option value="t35">(3, 5) torus knot</option><option value="unknot">No knot</option><option value="torus">Torus knot (p, q)</option></select></div>
@@ -614,7 +633,8 @@ details.opts[open] > summary { border-color: var(--accent); }
       <div class="card hd-card">
         <h3>All peel, no fruit</h3>
         <canvas id="hd-c1" aria-label="All peel, no fruit"></canvas>
-        <div class="hd-read"><span class="lab">Volume in the outer 1%</span><b id="hd-v1"></b></div>
+        <div class="row"><div class="top"><label class="lab" for="hd-eps">Thickness of the outer shell</label></div><input id="hd-eps" type="range" min="-3" max="-0.3" step="0.01" value="-2"></div>
+        <div class="hd-read"><span class="lab" id="hd-l1">Volume in the outer 1%</span><b id="hd-v1"></b></div>
       </div>
       <div class="card hd-card">
         <h3>Every direction is at right angles</h3>
@@ -636,6 +656,7 @@ details.opts[open] > summary { border-color: var(--accent); }
         <h3>Everyone is equally far away</h3>
         <canvas id="hd-c5" aria-label="Everyone is equally far away"></canvas>
         <div class="hd-read"><span class="lab">Farthest neighbour, against the nearest</span><b id="hd-v5"></b></div>
+        <div class="row"><div class="top"><label class="lab" for="hd-cnt">Random points</label><span class="hint" id="hd-cntv">300</span></div><input id="hd-cnt" type="range" min="1.7" max="3.5" step="0.01" value="2.477"></div>
         <p class="hint hd-foot" id="hd-f5"></p>
       </div>
     </div>
@@ -646,6 +667,56 @@ details.opts[open] > summary { border-color: var(--accent); }
       <p><b>The vanishing ball.</b> The unit ball's volume is pi^(n/2) / Gamma(n/2 + 1). It grows up to n = 5.2569, then falls faster than any exponential. Its share of the cube around it, divided by 2^n, falls faster still. Nearly all of a high cube is in its corners.</p>
       <p><b>The sphere that leaves its box.</b> In a box of side 4 put a sphere of radius 1 in each of the 2^n corners, and a sphere in the middle touching them all. Its radius is sqrt(n) - 1: a corner sphere's centre is sqrt(n) from the middle. The walls are 2 from the middle. At n = 9 the middle sphere touches the walls, and from n = 10 it reaches past them, though it only touches spheres inside the box. The picture puts these distances on one page to scale.</p>
       <p><b>Equally far.</b> The distance between random points of the unit cube is the square root of a sum of n small terms, so it settles near sqrt(n/6) with a spread that grows only like a constant. The gap between nearest and farthest shrinks to nothing, which is why searching for nearest neighbours stops working in high dimensions. Up to 30 million coordinates the panel samples real points; past that it draws from the normal limit, and says so.</p>
+    </details>
+  </section>
+
+  <section class="panel" id="s-curved" role="tabpanel" aria-labelledby="cv-h" hidden>
+    <div class="sec-head">
+      <h2 id="cv-h">Curved space</h2>
+      <p>Fit regular p-sided tiles together, q at each corner. If their corners leave a gap, the surface must close up into a sphere. If they fit exactly, it is flat. If too many crowd round each corner, the surface has to keep opening out: the hyperbolic plane, where there is more room at every distance than flat space can hold. Drag the picture to travel through it.</p>
+    </div>
+    <div class="qc-grid">
+      <div class="view">
+        <canvas id="ccv" class="orbit" aria-label="A tiling of curved space"></canvas>
+        <div class="cap"><b id="cv-title">Tiling</b><span id="cv-kind"></span></div>
+        <div class="foot"><span id="cv-n"></span> tiles drawn. Drag to travel.</div>
+      </div>
+      <div class="card tile-ctl">
+        <div class="row"><div class="top"><label class="lab" for="cv-p">Sides of each tile, p</label><input class="numsm" id="cv-pn" type="number" min="3" max="40" step="1" value="7" aria-label="p"></div>
+          <input id="cv-p" type="range" min="3" max="12" step="1" value="7"></div>
+        <div class="row"><div class="top"><label class="lab" for="cv-q">Tiles at each corner, q</label><input class="numsm" id="cv-qn" type="number" min="3" max="40" step="1" value="3" aria-label="q"></div>
+          <input id="cv-q" type="range" min="3" max="12" step="1" value="3"></div>
+        <div class="seg wrap-seg" role="group" aria-label="Examples" id="cv-pre">
+          <button data-p="4" data-q="3">cube</button><button data-p="3" data-q="5">icosahedron</button><button data-p="5" data-q="3">dodecahedron</button>
+          <button data-p="4" data-q="4">squares</button><button data-p="6" data-q="3">hexagons</button>
+          <button data-p="7" data-q="3">{7, 3}</button><button data-p="5" data-q="4">{5, 4}</button><button data-p="4" data-q="6">{4, 6}</button><button data-p="8" data-q="8">{8, 8}</button>
+        </div>
+        <div class="row"><div class="top"><span class="lab">View</span></div><div class="seg wrap-seg" role="group" aria-label="View" id="cv-view"></div></div>
+        <div class="row"><div class="top"><span class="lab">Colour</span>
+          <div class="seg" role="group" aria-label="Colour" id="cv-colour"><button data-c="check" aria-pressed="true">two colours, when q is even</button><button data-c="depth" aria-pressed="false">steps from the start</button></div></div></div>
+        <div class="controls"><button class="btn" id="cv-drift">Drift</button><button class="btn" id="cv-home">Back to the start</button></div>
+        <dl>
+          <dt>Angle test</dt><dd id="cv-sum"></dd>
+          <dt>Angles round each tile</dt><dd id="cv-ang"></dd>
+          <dt>Area of a tile</dt><dd id="cv-area"></dd>
+          <dt>New tiles at 1, 2, 3, ... steps</dt><dd id="cv-grow"></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="card hd-card">
+      <h3>How long is a circle?</h3>
+      <canvas id="ccirc" aria-label="Circumference against radius in three geometries"></canvas>
+      <div class="row"><div class="top"><label class="lab" for="cc-r">Radius</label><span class="hint" id="cc-rv">2.00</span></div><input id="cc-r" type="range" min="0" max="5" step="0.01" value="2"></div>
+      <div class="hd-read"><span class="lab" style="color:hsl(330, 70%, 50%)">Hyperbolic, 2 pi sinh r</span><b id="cc-h"></b></div>
+      <div class="hd-read"><span class="lab">Flat, 2 pi r</span><b id="cc-f"></b></div>
+      <div class="hd-read"><span class="lab" style="color:hsl(200, 70%, 45%)">Sphere, 2 pi sin r</span><b id="cc-s"></b></div>
+    </div>
+    <details class="notes">
+      <summary>How it works</summary>
+      <p><b>The test.</b> Tiles fit flat when their corner angle, (p - 2) 180 / p degrees, times q makes 360: when 1/p + 1/q = 1/2. That allows only squares {4, 4}, hexagons {6, 3} and triangles {3, 6}. More than 1/2 leaves a gap at each corner and the tiles close into a sphere: these are the five Platonic solids. Less than 1/2 overfills each corner, and the tiling needs the hyperbolic plane.</p>
+      <p><b>Area.</b> On a curved surface a polygon's angles do not add up to the flat total, and the difference is its area (Gauss-Bonnet, with curvature 1 or -1). That is why a sphere holds a fixed number of tiles and the hyperbolic plane holds infinitely many of a fixed size.</p>
+      <p><b>Views.</b> No flat picture of the hyperbolic plane keeps both angles and straight lines. The Poincare disk keeps angles and draws straight lines as circular arcs; the Klein disk draws them straight and bends angles; the half-plane and the band are two more views that keep angles. Every tile is the same size; the edge of each picture is infinitely far away. The sphere can be drawn stereographically, which keeps angles, or as a globe.</p>
+      <p><b>Growth.</b> The steps readout counts new tiles at each step out from the first. In the flat plane the count grows steadily; in the hyperbolic plane it multiplies at every step, as the length of a circle grows like sinh r. A hyperbolic circle of radius 10 is about 69,000 long.</p>
     </details>
   </section>
 
@@ -1419,6 +1490,8 @@ postMessage({ key, n: S.n, volume: S.volume, cells: cells.map((c) => ({ faces: c
 <script src="highd-view.js"></script>
 <script src="e8.js"></script>
 <script src="e8-view.js"></script>
+<script src="curved.js"></script>
+<script src="curved-view.js"></script>
 <script src="strings.js"></script>
 <script src="strings-view.js"></script>
 <script src="tabs.js"></script>

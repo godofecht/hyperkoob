@@ -54,8 +54,37 @@
 
   // ---------- reach inside ----------
   const B = 1.75, L = 1.5, KEY_IN = [0.85, -1.05, 0.55], KEY_OUT_X = 2.75;
+  // what passes through the box, and which way it comes
+  const rc = { obj: 'tesseract', how: 'corner', tilt: [0, 0, 0], cache: null };
+  function reachShape() {
+    const key = rc.obj + rc.how + rc.tilt.join();
+    if (rc.cache && rc.cache.key === key) return rc.cache;
+    const S4 = window.Solids4;
+    let out;
+    if (rc.obj === 'ball' || !S4) out = { key, ball: true, lo: -L, hi: L, n: [0, 0, 0, 1] };
+    else {
+      const M0 = S4.OBJECTS[rc.obj].make(), M = { V: M0.V.map((v) => v.map((x) => x * L)), E: M0.E };
+      let n = S4.approach(M, rc.how);
+      const R = S4.rotation([0, 0, (rc.tilt[0] * Math.PI) / 180, 0, (rc.tilt[1] * Math.PI) / 180, (rc.tilt[2] * Math.PI) / 180]);
+      n = S4.apply(R, n);
+      const fr = S4.frameFor(n), along = M.V.map((v) => v.reduce((a, x, i) => a + x * fr.n[i], 0));
+      // the solid's shadow on the plane of x and w, for the inset
+      const pts2 = M.V.map((v, i) => [v.reduce((a, x, k) => a + x * fr.basis[0][k], 0), along[i]]);
+      out = { key, M, n: fr.n, basis: fr.basis, lo: Math.min(...along), hi: Math.max(...along), hull2: hull2(pts2) };
+    }
+    rc.cache = out; return out;
+  }
+  function hull2(P) {
+    const p = P.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]), cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const lo = [], hi = [];
+    for (const q of p) { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+    for (const q of p.slice().reverse()) { while (hi.length > 1 && cr(hi[hi.length - 2], hi[hi.length - 1], q) <= 0) hi.pop(); hi.push(q); }
+    return lo.slice(0, -1).concat(hi.slice(0, -1));
+  }
+  const OBJ_NAMES = { tesseract: 'tesseract', cell5: '5-cell', cell16: '16-cell', cell24: '24-cell', cell600: '600-cell', cell120: '120-cell', ball: '4D ball' };
   function reachState(u) {
-    const tt = lerp(-L * 1.04, L * 1.04, clamp(u / 0.5, 0, 1));
+    const sh = reachShape(), pad = (sh.hi - sh.lo) * 0.02;
+    const tt = lerp(sh.lo - pad, sh.hi + pad, clamp(u / 0.5, 0, 1));
     let kx = KEY_IN[0], kw = 0;
     if (u > 0.52 && u < 0.66) { const f = (u - 0.52) / 0.14; kx = lerp(KEY_IN[0], KEY_OUT_X, smooth(f)); kw = Math.sin(Math.PI * f); }
     else if (u >= 0.66 && u <= 0.84) kx = KEY_OUT_X;
@@ -65,7 +94,10 @@
   function drawReach(c, w, h, dpr) {
     const u = st.t, S = reachState(u);
     const cam = camera(w, h, 0.13, -0.06), { rot, proj, eye } = cam;
-    const H = S.slicing ? F.tesseractSlice(L, S.tt, F.SLICE_BASIS) : { V: [], faces: [] };
+    const sh = reachShape();
+    let H = { V: [], faces: [] }, ballR = 0;
+    if (S.slicing && sh.ball) ballR = Math.sqrt(Math.max(0, L * L - S.tt * S.tt));
+    else if (S.slicing) { const pts = window.Solids4.sliceAt(sh.M, sh.n, S.tt, sh.basis); if (pts.length >= 4) H = F.hull3(pts); else H = { V: pts, faces: [] }; }
     const items = [];
     // the box: six faces, translucent
     const cube = [];
@@ -83,6 +115,10 @@
       if (dot3(n, sub3(eye, P[0])) <= 0) continue;
       const lit = dot3(n, LIGHT);
       items.push({ z: P.reduce((a, p) => a + p[2], 0) / P.length, draw: () => { poly(c, P.map(proj)); c.fillStyle = hsl(285, 0.92, lit * 18 - 6); c.fill(); c.strokeStyle = theme.panel; c.lineWidth = dpr; c.stroke(); } });
+    }
+    if (ballR > 0) {
+      const p = rot([0, 0, 0]), sp = proj(p), r = ballR * cam.sc * (14 / (14 - p[2]));
+      items.push({ z: 0, draw: () => { const gr = c.createRadialGradient(sp[0] - r * 0.35, sp[1] - r * 0.35, r * 0.1, sp[0], sp[1], r); gr.addColorStop(0, hsl(285, 1, 22)); gr.addColorStop(1, hsl(285, 1, -14)); c.fillStyle = gr; c.beginPath(); c.arc(sp[0], sp[1], r, 0, 7); c.fill(); } });
     }
     // the key: in our space only when its w is zero
     if (Math.abs(S.kw) < 1e-3) {
@@ -103,11 +139,12 @@
     c.strokeStyle = theme.accent; c.lineWidth = 2 * dpr; c.beginPath(); c.moveTo(ix + 6 * dpr, Y(0)); c.lineTo(ix + iw - 6 * dpr, Y(0)); c.stroke();
     c.strokeStyle = theme.fg; c.lineWidth = 3 * dpr;
     for (const x of [-B, B]) { c.beginPath(); c.moveTo(X(x), Y(0) - 6 * dpr); c.lineTo(X(x), Y(0) + 6 * dpr); c.stroke(); }
-    // the tesseract's x-w shadow: a diamond whose middle is at w = -tt
+    // the solid's shadow on the plane of x and w, moving down through our line
     if (S.slicing || u < 0.52) {
-      const cw = -S.tt;
-      c.strokeStyle = hsl(285, 1); c.fillStyle = hsl(285, 0.18); c.lineWidth = 1.5 * dpr;
-      c.beginPath(); c.moveTo(X(0), Y(cw + L)); c.lineTo(X(0.9), Y(cw)); c.lineTo(X(0), Y(cw - L)); c.lineTo(X(-0.9), Y(cw)); c.closePath(); c.fill(); c.stroke();
+      c.strokeStyle = hsl(285, 1); c.fillStyle = hsl(285, 0.18); c.lineWidth = 1.5 * dpr; c.beginPath();
+      if (sh.ball) c.arc(X(0), Y(-S.tt), (L / 3.4) * (iw / 2), 0, 7);
+      else sh.hull2.forEach((q, i) => (i ? c.lineTo(X(q[0]), Y(q[1] - S.tt)) : c.moveTo(X(q[0]), Y(q[1] - S.tt))));
+      c.closePath(); c.fill(); c.stroke();
     }
     c.fillStyle = 'hsl(44, 90%, 50%)'; c.beginPath(); c.arc(X(S.kx), Y(S.kw * 1.3), 4 * dpr, 0, 7); c.fill();
     c.fillStyle = theme.muted; c.font = `${10 * dpr}px "IBM Plex Mono", monospace`; c.textAlign = 'left';
@@ -115,16 +152,18 @@
     c.fillText('w', ix + 8 * dpr, iy + 14 * dpr);
     c.textAlign = 'right'; c.fillText('box walls', X(B) + 4 * dpr, Y(0) + 18 * dpr);
 
-    const name = S.slicing ? F.sliceName(H.V.length) : 'gone';
-    $('fd-foot').textContent = S.slicing ? `the tesseract's slice: ${name}` : Math.abs(S.kw) > 1e-3 ? 'the key is lifted in w: it is nowhere in our space' : S.kx > B ? 'the key is outside. The box was never opened.' : 'the key is back inside';
+    const oname = OBJ_NAMES[rc.obj] || rc.obj;
+    const name = !S.slicing ? 'gone' : sh.ball ? (ballR > 0 ? `a ball of radius ${ballR.toFixed(2)}` : 'a point') : H.faces.length ? F.sliceName(H.V.length, H.faces.map((f) => f.idx.length)) : F.sliceName(H.V.length);
+    $('fd-foot').textContent = S.slicing ? `the ${oname}'s slice: ${name}` : Math.abs(S.kw) > 1e-3 ? 'the key is lifted in w: it is nowhere in our space' : S.kx > B ? 'the key is outside. The box was never opened.' : 'the key is back inside';
     setStats([
-      ['Slice of the tesseract', S.slicing ? name : 'nothing'],
-      ['Where our slice meets it', S.slicing ? `${(S.tt / L).toFixed(2)} of the way` : 'past it'],
+      [`Slice of the ${oname}`, S.slicing ? name : 'nothing'],
+      ['Where our slice meets it', S.slicing ? `${(((S.tt - sh.lo) / (sh.hi - sh.lo)) * 100).toFixed(0)}% of the way through` : 'past it'],
       ['The key', Math.abs(S.kw) > 1e-3 ? 'not in our space' : S.kx > B ? 'outside the box' : 'inside the box'],
     ]);
   }
 
   // ---------- mirror you ----------
+  const mr = { axis: 0 };
   function mirrorAngle(u) { return u < 0.12 ? 0 : u < 0.5 ? Math.PI * ramp(u, 0.12, 0.5) : u < 0.76 ? Math.PI : u < 0.95 ? Math.PI * (1 - ramp(u, 0.76, 0.95)) : 0; }
   function drawMirror(c, w, h, dpr) {
     const th = mirrorAngle(st.t), cam = camera(w, h, 0.17, -0.02), { rot, proj, eye } = cam;
@@ -132,7 +171,7 @@
     const addHand = (shift, theta, ghost) => {
       for (const bx of F.HAND) {
         const C4 = [];
-        for (let m = 0; m < 8; m++) C4.push(F.turnXW([m & 1 ? bx[3] : bx[0], m & 2 ? bx[4] : bx[1], m & 4 ? bx[5] : bx[2]], theta));
+        for (let m = 0; m < 8; m++) C4.push(F.turnXW([m & 1 ? bx[3] : bx[0], m & 2 ? bx[4] : bx[1], m & 4 ? bx[5] : bx[2]], theta, mr.axis));
         const P = C4.map((p) => rot([p[0] + shift, p[1], p[2]]));
         const ctr = [0, 1, 2].map((k) => P.reduce((a, p) => a + p[k], 0) / 8);
         const quads = [[0, 1, 3, 2], [4, 5, 7, 6], [0, 1, 5, 4], [2, 3, 7, 6], [0, 2, 6, 4], [1, 3, 7, 5]];
@@ -155,11 +194,11 @@
     items.sort((a, b) => a.z - b.z).forEach((it) => it.draw());
     const label = (p, s) => { const q = proj(rot(p)); c.fillStyle = theme.muted; c.font = `${12 * dpr}px "IBM Plex Sans", sans-serif`; c.textAlign = 'center'; c.fillText(s, q[0], q[1]); };
     label([1.6, -2.0, 0], 'a right hand, for comparison');
-    const hd = F.handedness(th);
+    const hd = F.handedness(th, mr.axis);
     label([-1.5, -2.0, 0], hd > 0 ? 'right hand' : hd < 0 ? 'left hand' : 'flat in our space');
     $('fd-foot').textContent = hd > 0 && th > 0.01 ? 'turning through the fourth dimension' : hd < 0 && th > Math.PI - 0.01 ? 'a left hand. Nothing was bent or cut.' : hd < 0 ? 'coming back the other way round' : hd === 0 ? 'flat: all of its x is in w' : 'a right hand';
     setStats([
-      ['Turn in the x-w plane', `${Math.round((th * 180) / Math.PI)} degrees`],
+      [`Turn in the ${'xyz'[mr.axis]}-w plane`, `${Math.round((th * 180) / Math.PI)} degrees`],
       ['In our space', hd > 0 ? 'right hand' : hd < 0 ? 'left hand' : 'flat'],
       ['Lengths in 4D', 'unchanged'],
     ]);
@@ -248,6 +287,12 @@
     if (HOOKS[d] && HOOKS[d].onShow) HOOKS[d].onShow();
   }
   for (const b of document.querySelectorAll('#fd-demo button')) b.onclick = () => setDemo(b.dataset.demo);
+  if ($('rc-obj')) {
+    $('rc-obj').addEventListener('change', (e) => { rc.obj = e.target.value; $('rc-howrow').hidden = rc.obj === 'ball'; });
+    for (const b of document.querySelectorAll('#rc-how button')) b.onclick = () => { rc.how = b.dataset.h; for (const o of document.querySelectorAll('#rc-how button')) o.setAttribute('aria-pressed', o === b); };
+    [0, 1, 2].forEach((k) => $('rc-t' + k).addEventListener('input', () => { rc.tilt[k] = +$('rc-t' + k).value; $('rc-tv' + k).textContent = rc.tilt[k] + '°'; }));
+    for (const b of document.querySelectorAll('#mr-axis button')) b.onclick = () => { mr.axis = +b.dataset.a; for (const o of document.querySelectorAll('#mr-axis button')) o.setAttribute('aria-pressed', o === b); };
+  }
   const playBtn = $('fd-play'), tIn = $('fd-t');
   const showPlay = () => { playBtn.setAttribute('aria-pressed', st.play); playBtn.textContent = st.play ? 'Pause' : 'Play'; };
   playBtn.onclick = () => { st.play = !st.play; showPlay(); };
