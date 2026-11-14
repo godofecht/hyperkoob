@@ -1,5 +1,5 @@
 // Checks for fourd.js. Run with: node tests/fourd.test.js
-require('../fourd.js');
+require('../js/fourd.js');
 const F = globalThis.FourD;
 let failures = 0;
 function check(name, ok, detail) {

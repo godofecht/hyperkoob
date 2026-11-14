@@ -12,8 +12,7 @@
 
   let theme = {};
   function readTheme() {
-    const cs = getComputedStyle(document.documentElement), g = (k) => cs.getPropertyValue(k).trim();
-    theme = { fg: g('--fg'), muted: g('--muted'), line: g('--line'), accent: g('--accent'), panel: g('--panel'), el: parseFloat(g('--edge-l')) || 50 };
+    theme = UI.theme;
   }
   // roots, their rings in the Coxeter plane, and the edges of the famous picture
   const R = E.roots(), RP = R.map((r) => E.COXETER.map((c) => E.dot(c, r)));
@@ -40,12 +39,7 @@
     st.dirty = true;
   }
 
-  function sizeCanvas() {
-    const r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
-    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
-    return { w, h, dpr };
-  }
+  const sizeCanvas = () => UI.fit(cv);
   // 4D physical coordinates to the three on screen, after a turn that mixes
   // the third shown axis with the hidden one
   function to3(x) {
@@ -144,9 +138,7 @@
       if (st.spin && !st.drag && (st.view === 'shadow' || st.view === 'slice')) st.yaw += dt * 0.15;
       draw();
     }
-    requestAnimationFrame(frame);
   }
-  readTheme();
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
-  requestAnimationFrame(frame);
+  UI.onTheme(readTheme);
+  UI.loop(frame);
 })();

@@ -10,17 +10,10 @@
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   let theme = {};
   function readTheme() {
-    const cs = getComputedStyle(document.documentElement), g = (k) => cs.getPropertyValue(k).trim();
-    theme = { fg: g('--fg'), muted: g('--muted'), line: g('--line'), accent: g('--accent'), panel: g('--panel'), el: parseFloat(g('--edge-l')) || 50 };
+    theme = UI.theme;
   }
-  function canvas(id) {
-    const c = $(id), r = c.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
-    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
-    const x = c.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, w, h);
-    return { c: x, w, h, dpr };
-  }
-  const visible = (id) => { const el = $(id); return el && el.offsetParent !== null; };
+  const canvas = UI.canvas;
+  const visible = UI.visible;
 
   // ---------- Cauchy's average shadow ----------
   const ca = { solid: 'cube', run: !reduceMotion, n: 0, sum: 0, hist: [], dir: [0, 0, 1], seed: 7 };
@@ -122,9 +115,7 @@
     if (visible('cau-c')) { drawCauchy(); if (!partsDone) { drawParts(); partsDone = true; } }
     if (visible('eq-c')) drawEquator();
     if (visible('ho-c')) drawHolonomy(dt);
-    requestAnimationFrame(frame);
   }
-  readTheme();
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
-  requestAnimationFrame(frame);
+  UI.onTheme(readTheme);
+  UI.loop(frame);
 })();

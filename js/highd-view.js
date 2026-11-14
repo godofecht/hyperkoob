@@ -10,17 +10,10 @@
 
   let theme = {};
   function readTheme() {
-    const cs = getComputedStyle(document.documentElement), g = (k) => cs.getPropertyValue(k).trim();
-    theme = { fg: g('--fg'), muted: g('--muted'), line: g('--line'), accent: g('--accent'), panel: g('--panel'), el: parseFloat(g('--edge-l')) || 50 };
+    theme = UI.theme;
     st.dirty = true;
   }
-  function canvas(id) {
-    const c = $(id), r = c.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
-    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
-    const x = c.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, w, h);
-    return { c: x, w, h, dpr };
-  }
+  const canvas = UI.canvas;
   // A filled curve y = f(x) on [x0, x1], scaled to its own maximum.
   function curve(cx, w, h, dpr, f, x0, x1, opts = {}) {
     const pad = { l: 12 * dpr, r: 12 * dpr, t: 10 * dpr, b: 22 * dpr }, N = 400, ys = [];
@@ -165,11 +158,9 @@
       if (st.play) { st.v = Math.min(5, st.v + dt * 0.35); setN(10 ** st.v, false, true); if (st.v >= 5) { st.play = false; showPlay(); } }
       if (st.dirty) { st.dirty = false; drawAll(); }
     }
-    requestAnimationFrame(frame);
   }
-  readTheme();
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
+  UI.onTheme(readTheme);
   window.addEventListener('resize', () => { st.dirty = true; });
   setN(3); showPlay();
-  requestAnimationFrame(frame);
+  UI.loop(frame);
 })();

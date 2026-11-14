@@ -1,5 +1,5 @@
 // Checks for solids4.js. Run with: node tests/solids4.test.js
-require('../solids4.js');
+require('../js/solids4.js');
 const S = globalThis.Solids4;
 let failures = 0;
 function check(name, ok, detail) {

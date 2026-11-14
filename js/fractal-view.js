@@ -12,8 +12,7 @@
 
   let theme = {};
   function readTheme() {
-    const cs = getComputedStyle(document.documentElement), g = (k) => cs.getPropertyValue(k).trim();
-    theme = { fg: g('--fg'), muted: g('--muted'), line: g('--line'), accent: g('--accent'), panel: g('--panel'), el: parseFloat(g('--edge-l')) || 50 };
+    theme = UI.theme;
     st.dirty = true;
   }
   const hex = (css) => { const c = document.createElement('canvas').getContext('2d'); c.fillStyle = css; c.fillRect(0, 0, 1, 1); const d = c.getImageData(0, 0, 1, 1).data; return [d[0], d[1], d[2]]; };
@@ -39,10 +38,8 @@
   }
 
   function sizeCanvas(c) {
-    const r = c.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
-    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; st.dirty = true; }
-    return { w, h, dpr };
+    const s = UI.fit(c); if (s.changed) { st.dirty = true; }
+    return s;
   }
   function draw() {
     const { w, h, dpr } = sizeCanvas(cv), c = ctx, D = st.data;
@@ -162,10 +159,8 @@
       if (st.data.P[0].length === 3 && st.spin && !st.drag) { st.yaw += dt * 0.3; st.dirty = true; }
       if (st.dirty) { st.dirty = false; draw(); drawChart(); }
     }
-    requestAnimationFrame(frame);
   }
-  readTheme();
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
+  UI.onTheme(readTheme);
   window.addEventListener('resize', () => { st.dirty = true; });
-  requestAnimationFrame(frame);
+  UI.loop(frame);
 })();

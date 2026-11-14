@@ -53,22 +53,24 @@ The 2D view always draws the exact outline. Roundness is exact up to 120 axes in
 
 ## Files
 
-- `index.html`: the page
-- `hyper.js`: projections, frames and zonotope measures
-- `tile.js`: the tiling animation and honeycomb slices
-- `quasi.js`: cut-and-project tilings from the cube grid
-- `quasi-view.js`: the drawing and controls for those tilings
-- `fourd.js`, `fourd-view.js`: the fourth dimension demos
-- `highd.js`, `highd-view.js`: high-dimensional geometry
-- `knots.js`, `fourd-more.js`: knots, the maze and the Hopf fibration
-- `solids4.js`, `solids4-view.js`: the regular 4D solids, 4D surfaces and rotations
-- `e8.js`, `e8-view.js`: E8 and the Elser-Sloane quasicrystal
-- `strings.js`, `strings-view.js`: string theory's geometry
-- `curved.js`, `curved-view.js`: tilings of curved space
-- `fractal.js`, `fractal-view.js`: fractals and their dimension
-- `intuition.js`, `intuition-view.js`: the average shadow, cube parts, the equator and the carried arrow
-- `tabs.js`: one section at a time
-- `tests/geometry.test.js`, `tests/quasi.test.js`, `tests/fourd.test.js`, `tests/highd.test.js`, `tests/knots.test.js`, `tests/e8.test.js`, `tests/strings.test.js`, `tests/solids4.test.js`, `tests/curved.test.js`, `tests/intuition.test.js`: geometry checks
+- `index.html`: the page; `css/site.css`: its styles
+- `js/ui.js`: canvas sizing, the colour theme and the one animation loop every view shares
+- `js/hyper.js`, `js/shadows-view.js`: projections, frames and zonotope measures, and the Shadows tab
+- `js/tile.js`: the tiling animation and honeycomb slices
+- `js/quasi.js`, `js/quasi-view.js`: cut-and-project tilings from the cube grid
+- `js/fourd.js`, `js/fourd-view.js`: the fourth dimension demos
+- `js/knots.js`, `js/fourd-more.js`: knots, the maze and the Hopf fibration
+- `js/solids4.js`, `js/solids4-view.js`: the regular 4D solids, 4D surfaces and rotations
+- `js/highd.js`, `js/highd-view.js`: high-dimensional geometry
+- `js/e8.js`, `js/e8-view.js`: E8 and the Elser-Sloane quasicrystal
+- `js/fractal.js`, `js/fractal-view.js`: fractals and their dimension
+- `js/curved.js`, `js/curved-view.js`: tilings of curved space
+- `js/strings.js`, `js/strings-view.js`: string theory's geometry
+- `js/intuition.js`, `js/intuition-view.js`: the average shadow, cube parts, the equator and the carried arrow
+- `js/tabs.js`: one section at a time
+- `tests/*.test.js`: geometry checks; `tests/smoke.cjs`: every tab in a real browser
+
+Each topic is a pure maths file that runs in Node and a `-view.js` file that draws it.
 
 ## Run it
 
@@ -81,16 +83,8 @@ python3 -m http.server
 ## Tests
 
 ```
-node tests/geometry.test.js
-node tests/quasi.test.js
-node tests/fourd.test.js
-node tests/highd.test.js
-node tests/knots.test.js
-node tests/e8.test.js
-node tests/strings.test.js
-node tests/solids4.test.js
-node tests/curved.test.js
-node tests/intuition.test.js
+npm test                                  # every unit suite
+node tests/run.js http://localhost:8000/  # and every tab in a browser (needs Playwright)
 ```
 
 The checks cover: every 3D frame is an orthogonal projection; known roundness values (square, hexagon, octagon, cube, rhombic dodecahedron, rhombic triacontahedron); continuity as the dimension slides; and sampled points lying in exactly one tile, for whole and fractional dimensions and for slices up to 12 dimensions. For the quasicrystal tilings: every point covered by exactly one tile in 1D, 2D and 3D and by exactly one cell in slices of 4D to 6D tilings, slice cell volumes matching the space they fill, Penrose thick to thin near the golden ratio, whole numbers of tiles per repeat, and repeats mapping corners onto corners. For the fourth dimension: the tesseract's slices are a tetrahedron, a truncated tetrahedron and an octahedron and their volumes add up to its 4-volume, the half turn mirrors the hand while keeping every length, and the knot's strands cross in 3D but stay apart in 4D. For high dimensions: the ball volumes and their peak, the densities, the angle spread against 600 pairs of real random vectors, and the Penrose diffraction's sharp peaks and tenfold symmetry. For knots: known Alexander polynomials, unknotting moves that collide in 3D but not in 4D, and relaxation that keeps every knot's type. For E8: 240 roots, a Coxeter element of order 30, 8 rings of 30, two 600-cells in the golden ratio, and the first shells of the lattice. For strings: T-duality, the critical dimensions, -1/12, and the Calabi-Yau equation. For 4D solids: corner and edge counts, Euler's formula and equal edges for all six regular solids, what each kind of rotation leaves still, the net closing into a tesseract without bending, and the Klein bottle meeting itself in 3D but not in 4D. For curved space: the five Platonic solids from {p, q}, q tiles at every corner at angle 360/q, Gauss-Bonnet areas, and hyperbolic moves composed as matrices. For fractals: box counts within 0.035 of the rule's dimension, and the dragon's slow approach to 2. For the rest: Cauchy's quarter within 1% for five solids, the cube parts' alternating sum, the equator shares, and the carried arrow's turn equal to the triangle's area.

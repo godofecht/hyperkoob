@@ -10,16 +10,9 @@
 
   let theme = {};
   function readTheme() {
-    const cs = getComputedStyle(document.documentElement), g = (k) => cs.getPropertyValue(k).trim();
-    theme = { fg: g('--fg'), muted: g('--muted'), line: g('--line'), accent: g('--accent'), panel: g('--panel'), el: parseFloat(g('--edge-l')) || 50 };
+    theme = UI.theme;
   }
-  function canvas(id) {
-    const c = $(id), r = c.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
-    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
-    const x = c.getContext('2d'); x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, w, h);
-    return { c: x, w, h, dpr };
-  }
+  const canvas = UI.canvas;
   const fmt = (x) => (x >= 1000 || x < 0.01 ? x.toExponential(1).replace('e', ' × 10^').replace('+', '') : x.toPrecision(3));
 
   // 1. a hose: far away a line, close up a tube with a circle round it
@@ -142,10 +135,8 @@
       if (st.spin && !st.drag) st.yaw += dt * 0.25;
       drawHose(); drawWaves(); drawDual(); drawCY(); drawCrit();
     }
-    requestAnimationFrame(frame);
   }
-  readTheme();
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
+  UI.onTheme(readTheme);
   $('st-Rv').textContent = fmt(st.R);
-  requestAnimationFrame(frame);
+  UI.loop(frame);
 })();

@@ -1,6 +1,6 @@
 // Checks for fractal.js and intuition.js. Run with: node tests/intuition.test.js
-require('../fractal.js');
-require('../intuition.js');
+require('../js/fractal.js');
+require('../js/intuition.js');
 const F = globalThis.Fractal, I = globalThis.Intuition;
 let failures = 0;
 function check(name, ok, detail) {

@@ -1,7 +1,7 @@
 // Checks for highd.js and the diffraction in quasi.js. Run with: node tests/highd.test.js
-require('../hyper.js');
-require('../quasi.js');
-require('../highd.js');
+require('../js/hyper.js');
+require('../js/quasi.js');
+require('../js/highd.js');
 const D = globalThis.HighD, Q = globalThis.Quasi;
 let failures = 0;
 function check(name, ok, detail) {

@@ -24,19 +24,13 @@
 
   let theme = {};
   function readTheme() {
-    const cs = getComputedStyle(document.documentElement), g = (k) => cs.getPropertyValue(k).trim();
-    theme = { fg: g('--fg'), muted: g('--muted'), line: g('--line'), accent: g('--accent'), panel: g('--panel'), bg: g('--bg'), el: parseFloat(g('--edge-l')) || 50, es: g('--edge-s') || '72%' };
+    theme = UI.theme;
   }
   const hsl = (h, a, dl = 0, s) => `hsla(${h}, ${s || theme.es}, ${clamp(theme.el + dl, 8, 92)}%, ${a})`;
   // w as colour: blue below, grey at zero, orange above
   const wColor = (w, a, dl = 0) => { const k = clamp(Math.abs(w), 0, 1); return `hsla(${w < 0 ? 215 : 25}, ${Math.round(10 + 75 * k)}%, ${clamp(theme.el + dl, 8, 92)}%, ${a})`; };
 
-  function sizeCanvas() {
-    const r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
-    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
-    return { w, h, dpr };
-  }
+  const sizeCanvas = () => UI.fit(cv);
   function camera(w, h, scale, cy = 0) {
     const ca = Math.cos(st.yaw), sa = Math.sin(st.yaw), cp = Math.cos(st.pitch), sp = Math.sin(st.pitch);
     const rot = (p) => { const x1 = ca * p[0] + sa * p[2], z1 = -sa * p[0] + ca * p[2]; return [x1, cp * p[1] - sp * z1, sp * p[1] + cp * z1]; };
@@ -319,11 +313,8 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, w, h);
       DRAW[st.demo](ctx, w, h, dpr);
     }
-    requestAnimationFrame(frame);
   }
-  readTheme();
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
-  new MutationObserver(readTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
+  UI.onTheme(readTheme);
   setDemo('reach'); showPlay();
-  requestAnimationFrame(frame);
+  UI.loop(frame);
 })();

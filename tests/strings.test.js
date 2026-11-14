@@ -1,5 +1,5 @@
 // Checks for strings.js. Run with: node tests/strings.test.js
-require('../strings.js');
+require('../js/strings.js');
 const S = globalThis.Strings;
 let failures = 0;
 function check(name, ok, detail) {

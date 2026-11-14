@@ -1,5 +1,5 @@
 // Checks for knots.js. Run with: node tests/knots.test.js
-require('../knots.js');
+require('../js/knots.js');
 const K = globalThis.Knots;
 let failures = 0;
 function check(name, ok, detail) {

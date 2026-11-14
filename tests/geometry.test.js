@@ -1,7 +1,7 @@
 // Geometry checks for hyper.js and tile.js. Run with: node tests/geometry.test.js
 // Exits non-zero on any failure.
-require('../hyper.js');
-require('../tile.js');
+require('../js/hyper.js');
+require('../js/tile.js');
 const H = globalThis.Hyper, T = globalThis.Tile;
 
 let failures = 0;

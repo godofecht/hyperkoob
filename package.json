@@ -1,0 +1,10 @@
+{
+  "name": "hyperkoob",
+  "private": true,
+  "description": "Hypercube shadows: interactive geometry in any number of dimensions",
+  "scripts": {
+    "test": "node tests/run.js",
+    "smoke": "node tests/smoke.cjs http://localhost:8000/"
+  },
+  "license": "MIT"
+}

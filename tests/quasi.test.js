@@ -1,6 +1,6 @@
 // Checks for quasi.js. Run with: node tests/quasi.test.js
-require('../hyper.js');
-require('../quasi.js');
+require('../js/hyper.js');
+require('../js/quasi.js');
 const Q = globalThis.Quasi;
 
 let failures = 0;

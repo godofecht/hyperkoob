@@ -1,5 +1,5 @@
 // Checks for curved.js. Run with: node tests/curved.test.js
-require('../curved.js');
+require('../js/curved.js');
 const C = globalThis.Curved;
 let failures = 0;
 function check(name, ok, detail) {

@@ -14,8 +14,7 @@
 
   let theme = {};
   function readTheme() {
-    const cs = getComputedStyle(document.documentElement), g = (k) => cs.getPropertyValue(k).trim();
-    theme = { fg: g('--fg'), muted: g('--muted'), line: g('--line'), accent: g('--accent'), panel: g('--panel'), el: parseFloat(g('--edge-l')) || 50 };
+    theme = UI.theme;
     st.dirty = true;
   }
   const views = (kind) => (kind === 'hyperbolic' ? ['poincare', 'klein', 'halfplane', 'band'] : kind === 'sphere' ? ['stereo', 'globe'] : ['flat']);
@@ -58,10 +57,8 @@
   }
 
   function sizeCanvas() {
-    const r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
-    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; st.dirty = true; }
-    return { w, h, dpr };
+    const s = UI.fit(cv); if (s.changed) { st.dirty = true; }
+    return s;
   }
   function draw() {
     const { w, h, dpr } = sizeCanvas(), c = ctx, T = st.T;
@@ -171,10 +168,7 @@
 
   // how a circle grows with its radius, in each geometry
   function drawCircles() {
-    const c2 = $('ccirc'), r = c2.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
-    if (c2.width !== w || c2.height !== h) { c2.width = w; c2.height = h; }
-    const c = c2.getContext('2d'); c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, w, h);
+    const { c, w, h, dpr } = UI.canvas('ccirc');
     const pad = 14 * dpr, rmax = 5, ymax = C.circumference(rmax, 1);
     const X = (x) => pad + (x / rmax) * (w - 2 * pad), Y = (y) => h - pad - (Math.log10(1 + y) / Math.log10(1 + ymax)) * (h - 2 * pad);
     const lines = [[1, 'hyperbolic', 'hsl(330, 70%, 50%)'], [0, 'flat', theme.fg], [-1, 'sphere', 'hsl(200, 70%, 45%)']];
@@ -200,11 +194,9 @@
       if (st.dirty) { st.dirty = false; draw(); }
       drawCircles();
     }
-    requestAnimationFrame(frame);
   }
-  readTheme();
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
+  UI.onTheme(readTheme);
   window.addEventListener('resize', () => { st.dirty = true; });
   setPQ(7, 3);
-  requestAnimationFrame(frame);
+  UI.loop(frame);
 })();

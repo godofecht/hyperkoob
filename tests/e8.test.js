@@ -1,5 +1,5 @@
 // Checks for e8.js. Run with: node tests/e8.test.js
-require('../e8.js');
+require('../js/e8.js');
 const E = globalThis.E8;
 let failures = 0;
 function check(name, ok, detail) {

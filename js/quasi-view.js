@@ -22,19 +22,13 @@
 
   let theme = {};
   function readTheme() {
-    const cs = getComputedStyle(document.documentElement), g = (k) => cs.getPropertyValue(k).trim();
-    theme = { fg: g('--fg'), muted: g('--muted'), line: g('--line'), accent: g('--accent'), panel: g('--panel'), el: parseFloat(g('--edge-l')) || 50, es: g('--edge-s') || '72%' };
+    theme = UI.theme;
     q.dirty = true;
   }
   const hue = (j) => (j * 137.508 + 200) % 360;
   const shapeColor = (j, a, dl = 0) => `hsla(${hue(j)}, ${theme.es}, ${clamp(theme.el + dl, 8, 92)}%, ${a})`;
 
-  function sizeCanvas(c) {
-    const r = c.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
-    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; return { w, h, dpr, changed: true }; }
-    return { w, h, dpr, changed: false };
-  }
+  const sizeCanvas = (c) => UI.fit(c);
   function syncNum(el, v) { if (document.activeElement !== el) el.value = String(v); }
   function bindNum(el, set) {
     const commit = () => { const v = parseFloat(el.value); if (Number.isFinite(v)) set(v); };
@@ -444,9 +438,7 @@
     if (D.row >= D.res) D.done = true;
   }
   function drawDiff() {
-    const r = cd.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
-    if (cd.width !== w || cd.height !== h) { cd.width = w; cd.height = h; }
+    const { w, h, dpr } = UI.fit(cd);
     const c = ctxD; c.setTransform(1, 0, 0, 1, 0, 0); c.fillStyle = '#05060a'; c.fillRect(0, 0, w, h);
     const D = q.diff;
     c.fillStyle = '#9aa0b8'; c.font = `${11 * dpr}px "IBM Plex Mono", monospace`; c.textAlign = 'left';
@@ -576,6 +568,7 @@
   let last = performance.now();
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (!UI.shown('s-never')) return;
     work();
     if (visible.has(cq) && q.P) {
       if (q.grow && !q.sweep && q.rev !== Infinity) {
@@ -593,12 +586,9 @@
       if (!q.diff.done || !q.diffShown) { diffWork(); drawDiff(); q.diffShown = q.diff.done; }
     } else q.diffShown = false;
     draw();
-    requestAnimationFrame(frame);
   }
-  readTheme();
-  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
-  new MutationObserver(readTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class', 'style'] });
+  UI.onTheme(readTheme);
   window.addEventListener('resize', () => { q.dirty = true; q.diffShown = false; });
   q.d = 0; setD(2);
-  requestAnimationFrame(frame);
+  UI.loop(frame);
 })();
