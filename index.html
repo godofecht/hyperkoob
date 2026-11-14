@@ -26,6 +26,7 @@
       <button role="tab" data-tab="s-fractal" aria-selected="false">Fractal dimension</button>
       <button role="tab" data-tab="s-curved" aria-selected="false">Curved space</button>
       <button role="tab" data-tab="s-strings" aria-selected="false">String theory</button>
+      <button role="tab" data-tab="s-infinity" aria-selected="false">Infinity</button>
     </nav>
   </header>
 
@@ -660,6 +661,69 @@
       <p><b>26 and 10.</b> Quantum mechanics gives each of the D - 2 directions a string can vibrate in a zero-point energy of half of 1 + 2 + 3 + ..., which is -1/24 once the infinite part is removed: the panel shows the damped sum settling to -1/12 after subtracting 1/e^2. For the string's spectrum to respect special relativity the total must be -1, so (D - 2)/24 = 1 and D = 26. Superstrings add partners whose half-integer modes give -1/48 per direction; the requirement becomes (D - 2)/16 = 1/2, so D = 10.</p>
     </details>
   </section>
+
+  <section class="panel" id="s-infinity" role="tabpanel" aria-labelledby="inf-h" hidden>
+    <div class="sec-top">
+      <div class="sec-head">
+        <h2 id="inf-h">Infinity</h2>
+        <p>Infinite sets break the rules that finite ones keep. A line can pass through every point of a square. There are as many fractions as whole numbers, and more real numbers than both. A set can be cut into pieces that reassemble into two copies of itself. A horn can hold a finite amount of paint and still have too much surface to paint.</p>
+      </div>
+    </div>
+    <div class="hd-grid">
+      <div class="card hd-card">
+        <h3>A line that fills a square</h3>
+        <canvas id="inf-c1" class="tall" aria-label="A curve filling a square, and the part of it a window of time covers"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="inf-kind">Curve</label>
+          <select id="inf-kind"><option value="hilbert">Hilbert</option><option value="peano">Peano</option><option value="zorder">Z-order (not a curve)</option></select></div></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-n">Order</label><span class="hint" id="inf-nv">4</span></div><input id="inf-n" type="range" min="1" max="8" step="1" value="4"></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-t">Start of the window</label><button class="btn" id="inf-play1">Play</button></div><input id="inf-t" type="range" min="0" max="1" step="0.0001" value="0.3"></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-w">Window length</label><span class="hint" id="inf-wv">0.0625</span></div><input id="inf-w" type="range" min="-3" max="-0.6" step="0.01" value="-1.2041"></div>
+        <div class="hd-read"><span class="lab">A window of length w covers</span><b id="inf-v1a"></b></div>
+        <div class="hd-read"><span class="lab">Its image is this wide</span><b id="inf-v1b"></b></div>
+        <div class="hd-read"><span class="lab">Length of the drawn path</span><b id="inf-v1c"></b></div>
+        <div class="hd-read"><span class="lab">Longest step</span><b id="inf-v1d"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>Every fraction gets a number</h3>
+        <canvas id="inf-c2" class="tall" aria-label="Fractions p over q in a grid, numbered along a zigzag"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="inf-N">Grid size</label><span class="hint" id="inf-Nv">8</span></div><input id="inf-N" type="range" min="4" max="14" step="1" value="8"></div>
+        <div class="controls"><button class="btn" id="inf-play2">Play</button></div>
+        <div class="hd-read"><span class="lab">Now</span><b id="inf-v2"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>The real numbers do not</h3>
+        <canvas id="inf-c3" class="tall" aria-label="A list of binary numbers and a new number built along the diagonal"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="inf-rows">Rows in the list</label><span class="hint" id="inf-rowsv">10</span></div><input id="inf-rows" type="range" min="4" max="16" step="1" value="10"></div>
+        <div class="controls"><button class="btn" id="inf-play3">Play</button><button class="btn" id="inf-new">New list</button></div>
+        <div class="hd-read"><span class="lab">The new number</span><b id="inf-v3"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>One piece, moved, becomes three</h3>
+        <canvas id="inf-c4" class="sq" aria-label="The free group on two letters drawn in the hyperbolic disk, with one quarter moved"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="inf-piece">Move</label>
+          <select id="inf-piece"><option value="a">W(a⁻¹) by a</option><option value="A">W(a) by a⁻¹</option><option value="b">W(b⁻¹) by b</option><option value="B">W(b) by b⁻¹</option></select></div></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-mt">How far moved</label><button class="btn" id="inf-play4">Play</button></div><input id="inf-mt" type="range" min="0" max="1" step="0.001" value="0"></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-depth">Word length</label><span class="hint" id="inf-depthv">6</span></div><input id="inf-depth" type="range" min="2" max="8" step="1" value="6"></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-L">Step length</label><span class="hint" id="inf-Lv">1.90</span></div><input id="inf-L" type="range" min="0.8" max="3.2" step="0.01" value="1.9"></div>
+        <div class="hd-read"><span class="lab">Count</span><b id="inf-v4"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>Fill it, but never paint it</h3>
+        <canvas id="inf-c5" class="tall" aria-label="Gabriel's horn and its volume and surface as it lengthens"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="inf-L5">Length of the horn</label><span class="hint" id="inf-L5v">10^3.0</span></div><input id="inf-L5" type="range" min="0.05" max="12" step="0.01" value="3"></div>
+        <div class="hd-read"><span class="lab">Volume</span><b id="inf-v5a"></b></div>
+        <div class="hd-read"><span class="lab">Surface</span><b id="inf-v5b"></b></div>
+      </div>
+    </div>
+    <details class="notes">
+      <summary>How it works</summary>
+      <p><b>A line that fills a square.</b> David Hilbert's curve (1891) is the limit of the drawn paths as the order grows. Each order splits every cell into four and visits them in the same pattern, turned to join up. The limit is continuous and passes through every point of the square. A window of time of length w covers exactly w of the square's area, so its image is about the square root of w across: halve the window and the image shrinks only by the square root of 2. That is what dimension 2 means for a curve. Giuseppe Peano found the first such curve in 1890, on a grid of 3 by 3. The Z-order visits every cell too, but jumps across the square, so its limit is not continuous; watch the window's image split into far-apart pieces.</p>
+      <p><b>Counting the fractions.</b> Georg Cantor's zigzag runs along the diagonals of the grid of p/q, skipping fractions not in lowest terms. Every positive fraction is reached after finitely many steps, so the fractions and the whole numbers can be paired off one to one.</p>
+      <p><b>The reals do not.</b> Suppose some list held every number between 0 and 1. Build a new number whose first digit differs from row 1's first digit, whose second differs from row 2's second, and so on. It differs from every row, so the list missed it. No list can hold them all: the real numbers are a larger infinity than the whole numbers (Cantor, 1891). Binary numbers ending in all 1s have a second spelling, which the full argument handles; a list of the 0s-and-1s strings themselves has no such gap.</p>
+      <p><b>One piece becomes three.</b> The words in two letters a and b and their inverses, with no letter next to its inverse, form the free group. Split it by first letter into W(a), W(a⁻¹), W(b), W(b⁻¹), plus the empty word. Put a in front of every word of W(a⁻¹) and the a⁻¹ cancels: you get every word that does not start with a. One quarter, moved, is three quarters. So W(a) and a W(a⁻¹) rebuild the whole group, and W(b) and b W(b⁻¹) rebuild it again. Two copies from four pieces. The drawing puts each word at the point its moves send the centre to in the hyperbolic plane, where a and b are steps of the chosen length. The group then acts by rigid motions, and the move a carries the quarter W(a⁻¹) onto three quarters of the disk. The four coloured caps are the ping-pong lemma's half-planes: they stay apart when the step is longer than 2 artanh(1/√2) ≈ 1.763, which proves the group is free. Shorten the step past that and the pieces tangle. Banach and Tarski (1924) found two rotations of a ball that generate this group, and so cut a ball into five pieces that reassemble into two balls the same size as the first. Choosing which pieces the ball's points belong to needs the axiom of choice, and the pieces have no volume.</p>
+      <p><b>Gabriel's horn.</b> Spin y = 1/x, for x from 1 on, about the x-axis. Its volume is π(1 - 1/L) up to length L, which never passes π. Its surface is at least 2π ln L, which grows without end. So a can of π units of paint fills the horn, and yet no amount paints its surface. The paint inside is thinner than any coat, which is the way out of the puzzle. Evangelista Torricelli found the finite volume in 1641.</p>
+    </details>
+  </section>
 </div>
 
 <script src="js/ui.js"></script>
@@ -686,6 +750,8 @@
 <script src="js/curved-view.js"></script>
 <script src="js/strings.js"></script>
 <script src="js/strings-view.js"></script>
+<script src="js/infinity.js"></script>
+<script src="js/infinity-view.js"></script>
 <script src="js/tabs.js"></script>
 </body>
 </html>

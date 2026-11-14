@@ -1,5 +1,5 @@
 // One section at a time. The hash names the section (#shadows, #tiling,
-// #never, #4d), so a link can open any of them.
+// #never, #4d, ... #infinity), so a link can open any of them.
 (function () {
   const tabs = [...document.querySelectorAll('.tabs [data-tab]')];
   function show(id, write) {

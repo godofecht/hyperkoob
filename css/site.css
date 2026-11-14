@@ -174,6 +174,8 @@ table.parts th { color: var(--muted); font-weight: 500; }
 .hd-card { display: grid; gap: 8px; align-content: start; }
 .hd-card h3 { font-family: var(--font-display); font-weight: 500; font-size: 17px; margin: 0; }
 .hd-card canvas { display: block; width: 100%; aspect-ratio: 16 / 10; }
+.hd-card canvas.sq { aspect-ratio: 1; max-height: 560px; }
+.hd-card canvas.tall { aspect-ratio: 4 / 3; }
 .hd-read { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .hd-read .lab { margin: 0; }
 .hd-read b { font: 500 18px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--accent); }
