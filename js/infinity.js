@@ -130,5 +130,20 @@
     return 2 * Math.PI * (s * h) / 3;
   }
 
-  g.Infinite = { CURVES, hilbert, peano, zorder, curvePath, longestStep, gcd, zigzag, diagonal, INV, LETTERS, words, times, piece, DIR, step, mmul, apply, wordMatrix, place, MIN_STEP, cap, hornVolume, hornSurface };
+  // ---------- Collatz: halve if even, else 3n + 1 ----------
+  function collatz(n) { const out = [n]; while (n !== 1) { n = n % 2 ? 3 * n + 1 : n / 2; out.push(n); } return out; }
+  // Every path from 1 back out to n, turning one way at each even number and
+  // the other way at each odd one: the paths share their starts, so they
+  // grow as a tree. Returns segments as flat arrays of x, y per path.
+  function collatzTree(N, evenTurn, oddTurn, len = 1) {
+    const paths = [];
+    for (let n = 1; n <= N; n++) {
+      const p = collatz(n).reverse(), pts = [0, 0];
+      let x = 0, y = 0, a = Math.PI / 2;
+      for (let i = 1; i < p.length; i++) { a += p[i] % 2 ? -oddTurn : evenTurn; x += len * Math.cos(a); y += len * Math.sin(a); pts.push(x, y); }
+      paths.push(pts);
+    }
+    return paths;
+  }
+  g.Infinite = { collatz, collatzTree, CURVES, hilbert, peano, zorder, curvePath, longestStep, gcd, zigzag, diagonal, INV, LETTERS, words, times, piece, DIR, step, mmul, apply, wordMatrix, place, MIN_STEP, cap, hornVolume, hornSurface };
 })(typeof window !== 'undefined' ? window : globalThis);

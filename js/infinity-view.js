@@ -222,6 +222,47 @@
   }
   $('inf-L5').oninput = () => { hn.lg = +$('inf-L5').value; $('inf-L5v').textContent = hn.lg < 4 ? (10 ** hn.lg).toFixed(1) : '10^' + hn.lg.toFixed(1); };
 
+
+  // ---------- 6. Collatz ----------
+  const cz = { N: 3000, even: 8.6, odd: 16, pick: 27, img: null, key: '', bounds: null, longest: null };
+  function collatzImage(w, h, dpr) {
+    const key = [cz.N, cz.even, cz.odd, w, h, theme.fg].join();
+    if (cz.key === key) return cz.img;
+    const T = I.collatzTree(cz.N, (cz.even * Math.PI) / 180, (cz.odd * Math.PI) / 180);
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const p of T) for (let i = 0; i < p.length; i += 2) { x0 = Math.min(x0, p[i]); x1 = Math.max(x1, p[i]); y0 = Math.min(y0, p[i + 1]); y1 = Math.max(y1, p[i + 1]); }
+    const pad = 10 * dpr, s = Math.min((w - 2 * pad) / (x1 - x0 || 1), (h - 2 * pad) / (y1 - y0 || 1));
+    const ox = pad + ((w - 2 * pad) - s * (x1 - x0)) / 2 - s * x0, oy = h - pad - ((h - 2 * pad) - s * (y1 - y0)) / 2 + s * y0;
+    const off = document.createElement('canvas'); off.width = w; off.height = h;
+    const c = off.getContext('2d'); c.lineWidth = Math.max(0.6, 0.9 * dpr); c.lineJoin = 'round';
+    // longer paths drawn later and warmer, so the deep branches show
+    let longest = 1; for (let n = 1; n <= cz.N; n++) if (T[n - 1].length > T[longest - 1].length) longest = n;
+    const maxL = T[longest - 1].length;
+    T.forEach((p) => {
+      c.strokeStyle = hsl(150 - (110 * p.length) / maxL, 0.07 + 0.25 * (p.length / maxL));
+      c.beginPath(); c.moveTo(ox + s * p[0], oy - s * p[1]);
+      for (let i = 2; i < p.length; i += 2) c.lineTo(ox + s * p[i], oy - s * p[i + 1]);
+      c.stroke();
+    });
+    cz.img = off; cz.key = key; cz.bounds = { s, ox, oy }; cz.longest = longest; cz.T = T;
+    return off;
+  }
+  function drawCollatz() {
+    const { c, w, h, dpr } = canvas('inf-c6'), img = collatzImage(w, h, dpr), B = cz.bounds;
+    c.drawImage(img, 0, 0);
+    const n = clamp(Math.round(cz.pick), 1, cz.N), p = cz.T[n - 1];
+    c.strokeStyle = hsl(25, 1, -5); c.lineWidth = 2.2 * dpr; c.beginPath(); c.moveTo(B.ox + B.s * p[0], B.oy - B.s * p[1]);
+    for (let i = 2; i < p.length; i += 2) c.lineTo(B.ox + B.s * p[i], B.oy - B.s * p[i + 1]);
+    c.stroke();
+    const path = I.collatz(n), lp = I.collatz(cz.longest);
+    $('inf-v6a').textContent = `${path.length - 1} steps, highest ${Math.max(...path).toLocaleString('en')}`;
+    $('inf-v6b').textContent = `${cz.longest}, ${lp.length - 1} steps`;
+  }
+  $('inf-cN').oninput = () => { cz.N = Math.round(10 ** +$('inf-cN').value); $('inf-cNv').textContent = cz.N; };
+  $('inf-ce').oninput = () => { cz.even = +$('inf-ce').value; $('inf-cev').textContent = cz.even.toFixed(1) + '°'; };
+  $('inf-co').oninput = () => { cz.odd = +$('inf-co').value; $('inf-cov').textContent = cz.odd.toFixed(1) + '°'; };
+  $('inf-cn').addEventListener('change', () => { const v = Math.round(+$('inf-cn').value); if (v >= 1) { cz.pick = v; if (v > cz.N) { cz.N = Math.min(10000, v); $('inf-cN').value = Math.log10(cz.N); $('inf-cNv').textContent = cz.N; } } $('inf-cn').value = clamp(cz.pick, 1, cz.N); });
+
   let last = performance.now();
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
@@ -239,6 +280,7 @@
     if (UI.visible('inf-c3')) drawDiag();
     if (UI.visible('inf-c4')) drawGroup();
     if (UI.visible('inf-c5')) drawHorn();
+    if (UI.visible('inf-c6')) drawCollatz();
   }
   setOrderRange();
   UI.loop(frame);

@@ -584,6 +584,7 @@
         </dl>
       </div>
     </div>
+    <div class="hd-grid">
     <div class="card hd-card">
       <h3>How long is a circle?</h3>
       <canvas id="ccirc" aria-label="Circumference against radius in three geometries"></canvas>
@@ -600,12 +601,36 @@
       <div class="controls"><button class="btn" id="ho-play">Play</button></div>
       <dl><dt>Its three angles add to</dt><dd id="ho-sum"></dd><dt>Its area</dt><dd id="ho-area"></dd><dt>The arrow comes back turned by</dt><dd id="ho-turn"></dd></dl>
     </div>
+    <div class="card hd-card wide">
+      <h3>Stand inside a 3-sphere</h3>
+      <p class="sub" style="margin:0">A universe that closes up like the surface of a ball, one dimension up. Balls sit at the corners of a 4D solid. Drag to look round; hold the arrows or use the arrow keys to walk.</p>
+      <canvas id="s3-c" class="tall" tabindex="0" aria-label="A first-person view from inside the 3-sphere"></canvas>
+      <div class="controls"><button class="btn" id="s3-left" aria-label="Turn left">&larr;</button><button class="btn" id="s3-fwd" aria-label="Walk forward">&uarr;</button><button class="btn" id="s3-back" aria-label="Walk back">&darr;</button><button class="btn" id="s3-right" aria-label="Turn right">&rarr;</button><button class="btn" id="s3-play">Walk</button><button class="btn" id="s3-home">Back home</button></div>
+      <div class="row"><div class="top"><label class="lab" for="s3-set">Balls at the</label><select id="s3-set"></select></div></div>
+      <div class="row"><div class="top"><label class="lab" for="s3-r">Ball radius</label><span class="hint" id="s3-rv">0.09</span></div><input id="s3-r" type="range" min="0.02" max="0.3" step="0.01" value="0.09"></div>
+      <label class="check"><input type="checkbox" id="s3-both" checked> Light that went the long way round too</label>
+      <dl><dt>Walked</dt><dd id="s3-v1"></dd><dt>Home, the red ball</dt><dd id="s3-v2"></dd><dt>Images on screen</dt><dd id="s3-v3"></dd></dl>
+    </div>
+    <div class="card hd-card">
+      <h3>A chain that always closes</h3>
+      <p class="sub" style="margin:0">Fit a ring of circles between two circles, each touching both and its neighbours. If it closes once, it closes from every starting place. That is Steiner's porism.</p>
+      <canvas id="st-c" class="sq" aria-label="A Steiner chain of circles between two circles"></canvas>
+      <div class="row"><div class="top"><label class="lab" for="stn-n">Circles in the chain</label><span class="hint" id="stn-nv">7</span></div><input id="stn-n" type="range" min="3" max="24" step="1" value="7"></div>
+      <div class="row"><div class="top"><label class="lab" for="stn-k">Times round</label><span class="hint" id="stn-kv">1</span></div><input id="stn-k" type="range" min="1" max="3" step="1" value="1"></div>
+      <div class="row"><div class="top"><label class="lab" for="stn-off">Inner circle off centre</label><button class="btn" id="stn-play">Play</button></div><input id="stn-off" type="range" min="0" max="0.75" step="0.005" value="0.45"></div>
+      <div class="row"><div class="top"><label class="lab" for="stn-nudge">Change the inner circle's size</label><span class="hint" id="stn-nudgev">+0.0%</span></div><input id="stn-nudge" type="range" min="-12" max="12" step="0.1" value="0"></div>
+      <div class="controls"><button class="btn" id="stn-snap">Size that closes</button></div>
+      <dl><dt>Inner radius, before inversion</dt><dd id="stn-v1"></dd><dt>The chain</dt><dd id="stn-v2"></dd></dl>
+    </div>
+    </div>
     <details class="notes">
       <summary>How it works</summary>
       <p><b>The test.</b> Tiles fit flat when their corner angle, (p - 2) 180 / p degrees, times q makes 360: when 1/p + 1/q = 1/2. That allows only squares {4, 4}, hexagons {6, 3} and triangles {3, 6}. More than 1/2 leaves a gap at each corner and the tiles close into a sphere: these are the five Platonic solids. Less than 1/2 overfills each corner, and the tiling needs the hyperbolic plane.</p>
       <p><b>Area.</b> On a curved surface a polygon's angles do not add up to the flat total, and the difference is its area (Gauss-Bonnet, with curvature 1 or -1). That is why a sphere holds a fixed number of tiles and the hyperbolic plane holds infinitely many of a fixed size.</p>
       <p><b>Views.</b> No flat picture of the hyperbolic plane keeps both angles and straight lines. The Poincare disk keeps angles and draws straight lines as circular arcs; the Klein disk draws them straight and bends angles; the half-plane and the band are two more views that keep angles. Every tile is the same size; the edge of each picture is infinitely far away. The sphere can be drawn stereographically, which keeps angles, or as a globe.</p>
       <p><b>Growth.</b> The steps readout counts new tiles at each step out from the first. In the flat plane the count grows steadily; in the hyperbolic plane it multiplies at every step, as the length of a circle grows like sinh r. A hyperbolic circle of radius 10 is about 69,000 long.</p>
+      <p><b>Inside a 3-sphere.</b> The 3-sphere is the set of points at distance 1 from the centre in 4D, a closed space with no edge, as the surface of a ball is in 3D. Light runs along great circles. A ball of radius r at distance d along them looks as wide as sin r / sin d says: a quarter turn away it looks its true size, beyond that it looks bigger the farther it is, and near the antipode, distance π, it fills the whole sky, because every great circle out of you meets there. Light also goes the other way round, distance 2π - d, so each ball is seen a second time, behind and opposite. Walk 2π straight ahead and you are home. The balls sit at the corners of the regular 4D solids from the fourth dimension tab, here placed on the 3-sphere: the 600-cell's 120 corners are 36° apart.</p>
+      <p><b>Steiner's porism.</b> Jakob Steiner (1826). An inversion, or the disk's rigid motion z to (z - a)/(1 - conj(a) z), maps circles to circles and keeps touching circles touching. It can move the inner circle to the centre, shown in the inset, where the chain is a ring of equal circles that can be turned freely. n circles close up after k turns exactly when the inner radius is (1 - sin(πk/n))/(1 + sin(πk/n)) of the outer one. Change that size and a gap or an overlap appears, the same from every start.</p>
     </details>
   </section>
 
@@ -714,6 +739,16 @@
         <div class="hd-read"><span class="lab">Volume</span><b id="inf-v5a"></b></div>
         <div class="hd-read"><span class="lab">Surface</span><b id="inf-v5b"></b></div>
       </div>
+      <div class="card hd-card">
+        <h3>Does every path come down?</h3>
+        <canvas id="inf-c6" class="sq" aria-label="The Collatz paths of the first numbers, drawn as a tree"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="inf-cN">Paths from 1 to</label><span class="hint" id="inf-cNv">3000</span></div><input id="inf-cN" type="range" min="1" max="4" step="0.01" value="3.4771"></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-ce">Turn at an even number</label><span class="hint" id="inf-cev">8.6°</span></div><input id="inf-ce" type="range" min="0" max="30" step="0.1" value="8.6"></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-co">Turn the other way at an odd one</label><span class="hint" id="inf-cov">16.0°</span></div><input id="inf-co" type="range" min="0" max="30" step="0.1" value="16"></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-cn">Follow the number</label><input class="numsm" id="inf-cn" type="number" min="1" step="1" value="27"></div></div>
+        <div class="hd-read"><span class="lab">Its path</span><b id="inf-v6a"></b></div>
+        <div class="hd-read"><span class="lab">Longest in range</span><b id="inf-v6b"></b></div>
+      </div>
     </div>
     <details class="notes">
       <summary>How it works</summary>
@@ -722,6 +757,7 @@
       <p><b>The reals do not.</b> Suppose some list held every number between 0 and 1. Build a new number whose first digit differs from row 1's first digit, whose second differs from row 2's second, and so on. It differs from every row, so the list missed it. No list can hold them all: the real numbers are a larger infinity than the whole numbers (Cantor, 1891). Binary numbers ending in all 1s have a second spelling, which the full argument handles; a list of the 0s-and-1s strings themselves has no such gap.</p>
       <p><b>One piece becomes three.</b> The words in two letters a and b and their inverses, with no letter next to its inverse, form the free group. Split it by first letter into W(a), W(a⁻¹), W(b), W(b⁻¹), plus the empty word. Put a in front of every word of W(a⁻¹) and the a⁻¹ cancels: you get every word that does not start with a. One quarter, moved, is three quarters. So W(a) and a W(a⁻¹) rebuild the whole group, and W(b) and b W(b⁻¹) rebuild it again. Two copies from four pieces. The drawing puts each word at the point its moves send the centre to in the hyperbolic plane, where a and b are steps of the chosen length. The group then acts by rigid motions, and the move a carries the quarter W(a⁻¹) onto three quarters of the disk. The four coloured caps are the ping-pong lemma's half-planes: they stay apart when the step is longer than 2 artanh(1/√2) ≈ 1.763, which proves the group is free. Shorten the step past that and the pieces tangle. Banach and Tarski (1924) found two rotations of a ball that generate this group, and so cut a ball into five pieces that reassemble into two balls the same size as the first. Choosing which pieces the ball's points belong to needs the axiom of choice, and the pieces have no volume.</p>
       <p><b>Gabriel's horn.</b> Spin y = 1/x, for x from 1 on, about the x-axis. Its volume is π(1 - 1/L) up to length L, which never passes π. Its surface is at least 2π ln L, which grows without end. So a can of π units of paint fills the horn, and yet no amount paints its surface. The paint inside is thinner than any coat, which is the way out of the puzzle. Evangelista Torricelli found the finite volume in 1641.</p>
+      <p><b>Collatz.</b> Halve an even number; triple an odd one and add 1. Lothar Collatz asked in 1937 whether every start comes down to 1. Each path is drawn backwards from 1, turning one way at each even number and the other at each odd one, so paths that share an ending share a branch. 27 takes 111 steps and climbs to 9232 on the way. Every start below 2^68 has been checked and comes down (Barina, 2020), and no proof is known. This page checks every start up to 100,000.</p>
     </details>
   </section>
 </div>
@@ -748,6 +784,9 @@
 <script src="js/intuition-view.js"></script>
 <script src="js/curved.js"></script>
 <script src="js/curved-view.js"></script>
+<script src="js/sphere3.js"></script>
+<script src="js/steiner.js"></script>
+<script src="js/curved-more-view.js"></script>
 <script src="js/strings.js"></script>
 <script src="js/strings-view.js"></script>
 <script src="js/infinity.js"></script>
