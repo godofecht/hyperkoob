@@ -22,7 +22,7 @@
       n.focus(); show(n.dataset.tab, true); e.preventDefault();
     };
   });
-  const fromHash = () => 's-' + (location.hash.slice(1) || 'shadows');
+  const fromHash = () => 's-' + (location.hash.slice(1).split('?')[0] || 'shadows');
   window.addEventListener('hashchange', () => show(fromHash()));
   show(fromHash());
 })();

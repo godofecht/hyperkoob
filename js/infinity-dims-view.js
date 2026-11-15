@@ -65,7 +65,7 @@
 
   // ---------- 8. a line through every dimension ----------
   const MAXB = { 2: 6, 3: 4, 4: 3, 5: 2, 6: 2 };
-  const hd = { d: 3, b: 3, t: 0, play: !reduceMotion, yaw: 0.6, pitch: 0.35, spin: 0, cache: {}, drag: null };
+  const hd = { wk: 4, d: 3, b: 3, t: 0, play: !reduceMotion, yaw: 0.6, pitch: 0.35, spin: 0, cache: {}, drag: null };
   const hpath = () => hd.cache[hd.d + '.' + hd.b] || (hd.cache[hd.d + '.' + hd.b] = D.hilbertPath(hd.d, hd.b));
   // a view of d-space: the first three axes as usual, the rest turned in slowly
   function project(p, rot) {
@@ -81,7 +81,7 @@
     const S = Math.min(w, h) * (d === 2 ? 0.8 : 0.52), cx = w / 2, cy = h / 2 + 6 * dpr, cam = 3.2;
     const pts = P.map((p) => { const [x, y, z] = project(d === 2 ? [p[0], p[1], 0] : p, hd.spin), k = cam / (cam - z); return [cx + x * S * k, cy - y * S * k, z]; });
     // the window: a sixteenth of the line
-    const wl = 1 / 16, i0 = Math.floor(hd.t * N) % N, i1 = i0 + Math.floor(N * wl);
+    const wl = 2 ** -hd.wk, i0 = Math.floor(hd.t * N) % N, i1 = i0 + Math.max(1, Math.floor(N * wl));
     c.lineJoin = 'round';
     const segs = [];
     for (let i = 0; i < N - 1; i++) segs.push(i);
@@ -100,11 +100,12 @@
     c.fillText(`${d}D, ${N.toLocaleString()} cells`, 10 * dpr, 16 * dpr);
     $('inf-v8a').textContent = `${N.toLocaleString()} = 2^${d * hd.b}`;
     $('inf-v8b').textContent = `${spread.toFixed(3)} of the side`;
-    $('inf-v8c').textContent = `16^(-1/${d}) = ${(16 ** (-1 / d)).toFixed(3)}`;
+    $('inf-v8c').textContent = `2^(-${hd.wk}/${d}) = ${(2 ** (-hd.wk / d)).toFixed(3)}`;
   }
   function setD(v) { hd.d = v; $('inf-db').max = MAXB[v]; hd.b = Math.min(hd.b, MAXB[v]); $('inf-db').value = hd.b; $('inf-dbv').textContent = hd.b; }
   slider('inf-dd', 'inf-ddv', (v) => String(v), setD);
   slider('inf-db', 'inf-dbv', (v) => String(v), (v) => { hd.b = v; });
+  slider('inf-dw', 'inf-dwv', (v) => `1/${2 ** v}`, (v) => { hd.wk = v; $('inf-v8l').textContent = `1/${2 ** v} of the line spans`; });
   playButton('inf-play8', () => hd.play, (v) => { hd.play = v; });
   const c8 = $('inf-c8');
   c8.addEventListener('pointerdown', (e) => { hd.drag = [e.clientX, e.clientY]; c8.setPointerCapture(e.pointerId); });
@@ -112,12 +113,10 @@
   for (const ev of ['pointerup', 'pointercancel']) c8.addEventListener(ev, () => { hd.drag = null; });
 
   // ---------- 9. infinitely many sides, a finite diagonal ----------
-  const BOXES = {
-    harmonic: { name: 'sides 1, 1/2, 1/3, ...', sides: D.hilbertSides, limit: D.BASEL, hue: 25 },
-    unit: { name: 'sides 1, 1, 1, ...', sides: D.unitSides, limit: Infinity, hue: 210 },
-    half: { name: 'sides 1, 1/2, 1/4, ...', sides: (n) => Array.from({ length: n }, (_, k) => 2 ** -k), limit: 2 / Math.sqrt(3), hue: 140 },
-  };
-  const hc = { n: 12, box: 'harmonic', t: 0, play: !reduceMotion, scale: 0 };
+  // sides 1/k^p: p = 0 is the unit cube, p = 1 the Hilbert cube
+  const REFS = [{ p: 0, hue: 210, tag: '√n' }, { p: 0.5, hue: 140, tag: 'p=½' }, { p: 1, hue: 25, tag: 'π/√6' }];
+  const hueOf = (p) => (p <= 0.5 ? 210 - 140 * p : 140 - 230 * (p - 0.5)) % 360;
+  const hc = { n: 12, p: 1, t: 0, play: !reduceMotion, scale: 0 };
   // a turning plane in n dimensions: two fixed random directions mixed with two others
   const seeds = [];
   const rnd = (() => { let s = 7; return () => { s = (s * 16807) % 2147483647; return s / 2147483647 - 0.5; }; })();
@@ -130,7 +129,7 @@
     return [u, v];
   }
   function drawBox() {
-    const { c, w, h, dpr } = UI.canvas('inf-c9'), B = BOXES[hc.box], s = B.sides(hc.n);
+    const { c, w, h, dpr } = UI.canvas('inf-c9'), s = D.powerSides(hc.n, hc.p), B = { hue: (hueOf(hc.p) + 360) % 360 };
     const plotH = h * 0.34, top = h - plotH, cx = w / 2, cy = top / 2;
     const [u, v] = hc.n >= 2 ? frame2(hc.n, hc.t) : [[1], [0]];
     const gs = s.map((x, k) => [x * u[k], x * (v[k] || 0)]), poly = D.zonogon(gs);
@@ -154,23 +153,21 @@
     for (const y of [2, 4, 6, 8]) c.fillText(String(y), px0 - 4 * dpr, PY(y) + 3 * dpr);
     c.textAlign = 'center'; c.fillText('dimension', (px0 + px1) / 2, h - 4 * dpr);
     c.setLineDash([3 * dpr, 3 * dpr]); c.strokeStyle = hsl(25, 0.6); c.beginPath(); c.moveTo(px0, PY(D.BASEL)); c.lineTo(px1, PY(D.BASEL)); c.stroke(); c.setLineDash([]);
-    for (const [key, b] of Object.entries(BOXES)) {
-      c.strokeStyle = hsl(b.hue, key === hc.box ? 1 : 0.45); c.lineWidth = (key === hc.box ? 2 : 1.2) * dpr; c.beginPath();
-      for (let n = 1; n <= NM; n++) { const y = D.diag(b.sides(n)); n === 1 ? c.moveTo(PX(n), PY(y)) : c.lineTo(PX(n), PY(y)); }
+    for (const r of [...REFS, { p: hc.p, hue: B.hue, tag: '', mine: true }]) {
+      c.strokeStyle = hsl(r.hue, r.mine ? 1 : 0.45); c.lineWidth = (r.mine ? 2.2 : 1.2) * dpr; c.beginPath();
+      for (let n = 1; n <= NM; n++) { const y = D.diag(D.powerSides(n, r.p)); n === 1 ? c.moveTo(PX(n), PY(y)) : c.lineTo(PX(n), PY(y)); }
       c.stroke();
-      c.fillStyle = hsl(b.hue, 1, -8); c.textAlign = 'left';
-      const yEnd = PY(D.diag(b.sides(NM))) + (key === 'harmonic' ? -4 : key === 'half' ? 9 : 3) * dpr;
-      c.fillText({ harmonic: 'π/√6', unit: '√n', half: '2/√3' }[key], px1 + 4 * dpr, yEnd);
+      if (r.tag) { c.fillStyle = hsl(r.hue, 1, -8); c.textAlign = 'left'; c.fillText(r.tag, px1 + 4 * dpr, PY(D.diag(D.powerSides(NM, r.p))) + (r.p === 1 ? 4 : r.p === 0.5 ? -4 : 3) * dpr); }
     }
     c.fillStyle = theme.fg; c.beginPath(); c.arc(PX(Math.min(hc.n, NM)), PY(D.diag(s)), 3.5 * dpr, 0, 7); c.fill();
     const vol = s.reduce((a, x) => a * x, 1);
     $('inf-v9a').textContent = D.diag(s).toFixed(4);
-    $('inf-v9b').textContent = B.limit === Infinity ? 'none: it grows like √n' : B.limit.toFixed(4) + (hc.box === 'harmonic' ? ' = π/√6' : ' = 2/√3');
+    $('inf-v9b').textContent = hc.p > 0.5 ? `√ζ(${(2 * hc.p).toFixed(2)}) = ${Math.sqrt(D.zeta(2 * hc.p)).toFixed(4)}${Math.abs(hc.p - 1) < 1e-9 ? ' = π/√6' : ''}` : hc.p === 0.5 ? 'none: it grows like √(ln n)' : `none: it grows like n^${(0.5 - hc.p).toFixed(2)}`;
     $('inf-v9c').textContent = vol < 1e-4 ? vol.toExponential(2) : vol.toFixed(4);
   }
   slider('inf-hn', 'inf-hnv', (v) => String(v), (v) => { hc.n = v; });
-  $('inf-hb').innerHTML = Object.entries(BOXES).map(([k, b]) => `<option value="${k}">${b.name}</option>`).join('');
-  $('inf-hb').onchange = () => { hc.box = $('inf-hb').value; hc.scale = 0; };
+  slider('inf-hp', 'inf-hpv', (v) => v.toFixed(2), (v) => { hc.p = v; hc.scale = 0; });
+  for (const b of document.querySelectorAll('#inf-hpre button')) b.onclick = () => { $('inf-hp').value = b.dataset.p; $('inf-hp').dispatchEvent(new Event('input')); };
   playButton('inf-play9', () => hc.play, (v) => { hc.play = v; });
 
   let last = performance.now();

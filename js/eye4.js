@@ -51,14 +51,16 @@
   const CELL_DARK = [0.7, 1, 0.7, 1, 0.7, 1, 0.7, 1];
   const LIGHT = (() => { const l = [-0.5, 0.7, -0.35, -0.45], n = Math.sqrt(dot(l, l)); return l.map((x) => x / n); })();
   // Trace one ray: what colour (hue, lightness 0..1) it brings back, or null.
-  function trace(scene, d) {
+  // a light from angle q round the plane of y and w
+  function light(q) { const l = [-0.35, Math.cos(q), 0.25, Math.sin(q)], n = Math.sqrt(dot(l, l)); return l.map((x) => x / n); }
+  function trace(scene, d, eye = EYE, L = LIGHT) {
     let best = null;
     for (const ob of scene) {
-      const h = ob.kind === 'box' ? hitBox(EYE, d, ob) : hitBall(EYE, d, ob);
+      const h = ob.kind === 'box' ? hitBox(eye, d, ob) : hitBall(eye, d, ob);
       if (h && (!best || h.t < best.t)) best = { ...h, ob };
     }
     if (!best) return null;
-    const lit = 0.4 + 0.6 * Math.max(0, dot(best.n, LIGHT));
+    const lit = 0.4 + 0.6 * Math.max(0, dot(best.n, L));
     const hue = best.ob.kind === 'box' ? CELL_HUE[best.cell] : best.ob.hue;
     return { hue, lit: best.ob.kind === 'box' ? lit * CELL_DARK[best.cell] : lit, t: best.t, cell: best.cell };
   }
@@ -75,5 +77,5 @@
     if (kind !== 'box') out.push({ kind: 'ball', c: kind === 'both' ? [0.95, 0.15, 0, 0.9 + 0.6 * Math.sin(a)] : [0, 0, 0, 0], r: 0.8, hue: 290 });
     return out;
   }
-  g.Eye4 = { dot, turn, mul, apply, EYE, ray, hitBox, hitBall, trace, scene, CELL_HUE, CELL_DARK, LIGHT };
+  g.Eye4 = { light, dot, turn, mul, apply, EYE, ray, hitBox, hitBall, trace, scene, CELL_HUE, CELL_DARK, LIGHT };
 })(typeof window !== 'undefined' ? window : globalThis);

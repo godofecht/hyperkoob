@@ -49,6 +49,13 @@
   const diag = (sides) => Math.sqrt(sides.reduce((s, x) => s + x * x, 0));
   const hilbertSides = (n) => Array.from({ length: n }, (_, k) => 1 / (k + 1));
   const unitSides = (n) => new Array(n).fill(1);
+  // sides 1, 1/2^p, 1/3^p, ...: the diagonal squared is the sum of 1/k^(2p)
+  const powerSides = (n, p) => Array.from({ length: n }, (_, k) => (k + 1) ** -p);
+  // Riemann's zeta for s > 1: a partial sum and the Euler-Maclaurin tail
+  function zeta(s, N = 64) {
+    let z = 0; for (let k = 1; k < N; k++) z += k ** -s;
+    return z + N ** (1 - s) / (s - 1) + 0.5 * N ** -s + (s * N ** (-s - 1)) / 12 - (s * (s + 1) * (s + 2) * N ** (-s - 3)) / 720;
+  }
   // The shadow of a box on a plane is a zonogon: the sum of its edge vectors'
   // shadows. Outline from generators gs (2D vectors), centred on 0.
   function zonogon(gs) {
@@ -65,5 +72,5 @@
   // area of a polygon
   const area = (P) => Math.abs(P.reduce((s, p, i) => { const q = P[(i + 1) % P.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0)) / 2;
 
-  g.InfDims = { hilbertD, hilbertPath, preimage, diag, hilbertSides, unitSides, zonogon, area, BASEL: Math.PI / Math.sqrt(6) };
+  g.InfDims = { powerSides, zeta, hilbertD, hilbertPath, preimage, diag, hilbertSides, unitSides, zonogon, area, BASEL: Math.PI / Math.sqrt(6) };
 })(typeof window !== 'undefined' ? window : globalThis);

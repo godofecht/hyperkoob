@@ -27,6 +27,7 @@
       <button role="tab" data-tab="s-curved" aria-selected="false">Curved space</button>
       <button role="tab" data-tab="s-strings" aria-selected="false">String theory</button>
       <button role="tab" data-tab="s-infinity" aria-selected="false">Infinity</button>
+      <button role="tab" data-tab="s-links" aria-selected="false">Connections</button>
     </nav>
   </header>
 
@@ -451,6 +452,9 @@
       <div class="row"><div class="top"><label class="lab" for="e4-a">Turned by <span id="e4-av">35°</span></label><button class="btn" id="e4-play">Turn</button></div><input id="e4-a" type="range" min="0" max="359" step="1" value="35"></div>
       <div class="row"><div class="top"><label class="lab" for="e4-slice">Slice of the retina</label><span class="hint" id="e4-slicev">0.00</span></div><input id="e4-slice" type="range" min="-0.95" max="0.95" step="0.01" value="0"></div>
       <div class="row"><div class="top"><label class="lab" for="e4-res">Retina cells</label><span class="hint" id="e4-resv">22³</span></div><input id="e4-res" type="range" min="10" max="34" step="1" value="22"></div>
+      <div class="row"><div class="top"><label class="lab" for="e4-fov">Field of view</label><span class="hint" id="e4-fovv"></span></div><input id="e4-fov" type="range" min="0.15" max="1" step="0.01" value="0.42"></div>
+      <div class="row"><div class="top"><label class="lab" for="e4-dist">Distance to the eye</label><span class="hint" id="e4-distv"></span></div><input id="e4-dist" type="range" min="2" max="9" step="0.1" value="4.2"></div>
+      <div class="row"><div class="top"><label class="lab" for="e4-light">Light, from angle</label><span class="hint" id="e4-lightv"></span></div><input id="e4-light" type="range" min="-180" max="180" step="1" value="-52"></div>
       <dl><dt>Retina</dt><dd id="e4-v1"></dd><dt>At the centre of the slice</dt><dd id="e4-v2"></dd><dt>Cells of the tesseract in view</dt><dd id="e4-v3"></dd></dl>
     </div>
     </div>
@@ -622,6 +626,7 @@
       <div class="controls"><button class="btn" id="s3-left" aria-label="Turn left">&larr;</button><button class="btn" id="s3-fwd" aria-label="Walk forward">&uarr;</button><button class="btn" id="s3-back" aria-label="Walk back">&darr;</button><button class="btn" id="s3-right" aria-label="Turn right">&rarr;</button><button class="btn" id="s3-play">Walk</button><button class="btn" id="s3-home">Back home</button></div>
       <div class="row"><div class="top"><label class="lab" for="s3-set">Balls at the</label><select id="s3-set"></select></div></div>
       <div class="row"><div class="top"><label class="lab" for="s3-r">Ball radius</label><span class="hint" id="s3-rv">0.09</span></div><input id="s3-r" type="range" min="0.02" max="0.3" step="0.01" value="0.09"></div>
+      <div class="row"><div class="top"><label class="lab" for="s3-fov">Field of view</label><span class="hint" id="s3-fovv">116°</span></div><input id="s3-fov" type="range" min="40" max="160" step="1" value="116"></div>
       <label class="check"><input type="checkbox" id="s3-both" checked> Light that went the long way round too</label>
       <dl><dt>Walked</dt><dd id="s3-v1"></dd><dt>Home, the red ball</dt><dd id="s3-v2"></dd><dt>Images on screen</dt><dd id="s3-v3"></dd></dl>
     </div>
@@ -645,6 +650,7 @@
       <div class="row"><div class="top"><label class="lab" for="hf-n">Circles</label><span class="hint" id="hf-nv">24</span></div><input id="hf-n" type="range" min="2" max="60" step="1" value="24"></div>
       <div class="row"><div class="top"><label class="lab" for="hf-lat">Latitude of the ring</label><span class="hint" id="hf-latv">20°</span></div><input id="hf-lat" type="range" min="-80" max="80" step="1" value="20"></div>
       <div class="row"><div class="top"><label class="lab" for="hf-a">Turn the 3-sphere <span id="hf-av">34°</span></label><button class="btn" id="hf-play">Play</button></div><input id="hf-a" type="range" min="0" max="359" step="1" value="34"></div>
+      <div class="row"><div class="top"><label class="lab" for="hf-plane">Turn it in the plane</label><select id="hf-plane"><option value="mix">that moves circles to other circles</option><option value="fibre">along the circles (nothing changes)</option><option value="base">that turns the sphere below</option></select></div></div>
       <label class="check"><input type="checkbox" id="hf-flow" checked> Show the flow round each circle</label>
       <dl><dt>Circles drawn</dt><dd id="hf-v1"></dd><dt>Linking number of the first two</dt><dd id="hf-v2"></dd><dt>Together they make</dt><dd id="hf-v3"></dd></dl>
     </div>
@@ -655,6 +661,10 @@
       <div class="row"><div class="top"><span class="lab">Cubes round each edge</span>
         <div class="seg" role="group" aria-label="Cubes round each edge" id="hw-m"><button data-m="3" aria-pressed="false">3, sphere</button><button data-m="4" aria-pressed="false">4, flat</button><button data-m="5" aria-pressed="true">5, hyperbolic</button><button data-m="6" aria-pressed="false">6, ideal</button></div></div></div>
       <div class="controls"><button class="btn" id="hw-left" aria-label="Turn left">&larr;</button><button class="btn" id="hw-fwd" aria-label="Walk forward">&uarr;</button><button class="btn" id="hw-back" aria-label="Walk back">&darr;</button><button class="btn" id="hw-right" aria-label="Turn right">&rarr;</button><button class="btn" id="hw-play">Walk</button><button class="btn" id="hw-home">Back to the start</button></div>
+      <div class="row"><div class="top"><label class="lab" for="hw-fov">Field of view</label><span class="hint" id="hw-fovv"></span></div><input id="hw-fov" type="range" min="40" max="140" step="1" value="70"></div>
+      <div class="row"><div class="top"><label class="lab" for="hw-thick">Edge thickness</label><span class="hint" id="hw-thickv"></span></div><input id="hw-thick" type="range" min="0.005" max="0.08" step="0.001" value="0.03"></div>
+      <div class="row"><div class="top"><label class="lab" for="hw-fog">How far you can see</label><span class="hint" id="hw-fogv"></span></div><input id="hw-fog" type="range" min="0.3" max="3" step="0.1" value="1"></div>
+      <div class="row"><div class="top"><label class="lab" for="hw-speed">Walking speed</label><span class="hint" id="hw-speedv"></span></div><input id="hw-speed" type="range" min="0.2" max="4" step="0.1" value="1"></div>
       <dl><dt>Space</dt><dd id="hw-v1"></dd><dt>Cubes near you</dt><dd id="hw-v2"></dd><dt>Walked</dt><dd id="hw-v3"></dd><dt>Edges on screen</dt><dd id="hw-v4"></dd></dl>
     </div>
     </div>
@@ -800,20 +810,22 @@
       </div>
       <div class="card hd-card">
         <h3>A line through every dimension</h3>
-        <p class="sub" style="margin:0">The same construction fills a cube, or a cube in any number of dimensions. The orange stretch is a sixteenth of the line. In d dimensions it spans 16^(-1/d) of the side, so the more dimensions, the farther a short stretch reaches. Drag to turn it.</p>
+        <p class="sub" style="margin:0">The same construction fills a cube, or a cube in any number of dimensions. The orange stretch is 1/2^k of the line. In d dimensions it spans 2^(-k/d) of the side, so the more dimensions, the farther a short stretch reaches. Drag to turn it.</p>
         <canvas id="inf-c8" class="sq orbit" aria-label="A Hilbert curve filling a cube in several dimensions"></canvas>
         <div class="row"><div class="top"><label class="lab" for="inf-dd">Dimensions</label><span class="hint" id="inf-ddv">3</span></div><input id="inf-dd" type="range" min="2" max="6" step="1" value="3"></div>
         <div class="row"><div class="top"><label class="lab" for="inf-db">Order</label><span class="hint" id="inf-dbv">3</span></div><input id="inf-db" type="range" min="1" max="4" step="1" value="3"></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-dw">Length of the stretch</label><span class="hint" id="inf-dwv">1/16</span></div><input id="inf-dw" type="range" min="1" max="10" step="1" value="4"></div>
         <div class="controls"><button class="btn" id="inf-play8">Play</button></div>
         <div class="hd-read"><span class="lab">Cells</span><b id="inf-v8a"></b></div>
-        <div class="hd-read"><span class="lab">A sixteenth of the line spans</span><b id="inf-v8b"></b></div>
+        <div class="hd-read"><span class="lab" id="inf-v8l">1/16 of the line spans</span><b id="inf-v8b"></b></div>
         <div class="hd-read"><span class="lab">A cube of that volume has side</span><b id="inf-v8c"></b></div>
       </div>
       <div class="card hd-card">
         <h3>Infinitely many sides, a finite diagonal</h3>
-        <p class="sub" style="margin:0">A box with one side for every whole number. With sides 1, 1/2, 1/3, ... its diagonal stays finite in every dimension and tends to π/√6, because 1 + 1/4 + 1/9 + ... = π²/6. The coloured path walks the diagonal one dimension at a time. Compare the <a href="#high">high dimensions</a> tab, where the unit cube's diagonal grows without end.</p>
+        <p class="sub" style="margin:0">A box with one side for every whole number, the k-th of length 1/k^p. Its diagonal squared is 1 + 1/2^(2p) + 1/3^(2p) + ..., which is finite exactly when p is more than 1/2, and is then the zeta function at 2p. With p = 1 it tends to π/√6, because 1 + 1/4 + 1/9 + ... = π²/6. The coloured path walks the diagonal one dimension at a time. Compare the <a href="#high">high dimensions</a> tab, where the unit cube's diagonal grows without end.</p>
         <canvas id="inf-c9" class="tall" aria-label="The shadow of a box with many sides, and its diagonal against dimension"></canvas>
-        <div class="row"><div class="top"><label class="lab" for="inf-hb">Box</label><select id="inf-hb"></select></div></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-hp">Sides 1/k^p, with p =</label><span class="hint" id="inf-hpv">1.00</span></div><input id="inf-hp" type="range" min="0" max="2" step="0.01" value="1"></div>
+        <div class="seg wrap-seg" role="group" aria-label="Boxes" id="inf-hpre"><button data-p="0">unit cube</button><button data-p="0.5">p = 1/2</button><button data-p="0.75">p = 3/4</button><button data-p="1">Hilbert cube</button><button data-p="2">sides 1/k²</button></div>
         <div class="row"><div class="top"><label class="lab" for="inf-hn">Dimensions</label><span class="hint" id="inf-hnv">12</span></div><input id="inf-hn" type="range" min="1" max="60" step="1" value="12"></div>
         <div class="controls"><button class="btn" id="inf-play9">Play</button></div>
         <div class="hd-read"><span class="lab">Diagonal</span><b id="inf-v9a"></b></div>
@@ -832,6 +844,35 @@
       <p><b>Where a patch came from.</b> A continuous curve through every point of the square cannot be one to one: Eugen Netto proved in 1879 that no continuous one-to-one map takes a line onto a square. Some points are passed two, three or four times, and every disk is the image of several separate stretches of the line. The Hilbert curve needs few pieces; the Z-order, which jumps, needs many more. A one-to-one pairing of the line with the square does exist, by interleaving digits (Cantor, 1877), so the two have the same number of points. Dimension is what that pairing must tear apart.</p>
       <p><b>Every dimension.</b> The d-dimensional Hilbert curve uses John Skilling's method (2004): the bits of the position along the line are dealt out to the d axes, then a Gray code and a sequence of turns are undone. A stretch of length w fills w of the cube's volume, so it spans about w^(1/d) of each side. As d grows that tends to 1: in very many dimensions a short piece of the line already reaches across the whole cube. The pictures above 3D are shadows of the cube turned slowly through its extra axes.</p>
       <p><b>The Hilbert cube.</b> The box with sides 1, 1/2, 1/3, ... in infinitely many dimensions is the Hilbert cube. Its diagonal squared is 1 + 1/4 + 1/9 + ..., which Euler showed is π²/6 (the Basel problem, 1734), so the diagonal is π/√6 ≈ 1.2825 and every point of it is within that distance of every other. Its volume, the product of the sides, is 1/n!, which goes to 0. The box with all sides 1 has diagonal √n and no finite size at all. The picture is the shadow of the box on a turning plane: a zonogon, the sum of the shadows of its edges.</p>
+    </details>
+  </section>
+
+  <section class="panel" id="s-links" role="tabpanel" aria-labelledby="lk-h" hidden>
+    <div class="sec-head">
+      <h2 id="lk-h">Connections</h2>
+      <p>Every card on this page is one idea, and most of them are the same few ideas seen from different sides. Each line on the map is a shared idea, said in a sentence, with links that open both cards set up to show it. Pick an idea, or follow a route from start to finish. Every card also lists its connections at the bottom.</p>
+    </div>
+    <div class="view lk-view">
+      <canvas id="lk-c" aria-label="A map of the ideas on this page and how they connect"></canvas>
+      <div class="cap"><b>Map</b><span id="lk-count"></span></div>
+    </div>
+    <div class="lk-legend" id="lk-legend"></div>
+    <div class="hd-grid">
+      <div class="card hd-card">
+        <div class="row"><div class="top"><label class="lab" for="lk-thread">Follow a route</label><select id="lk-thread"></select></div></div>
+        <div id="lk-route" hidden>
+          <p class="lab" id="lk-step" style="margin:6px 0 2px"></p>
+          <p class="sub" id="lk-why" style="margin:0 0 8px"></p>
+          <div class="controls"><button class="btn" id="lk-prev">Back</button><button class="btn" id="lk-next">Next</button><a class="btn" id="lk-open" href="#">Open this step</a></div>
+        </div>
+        <div class="row"><div class="top"><label class="lab" for="lk-theme">Highlight</label><select id="lk-theme"></select></div></div>
+      </div>
+      <div class="card hd-card"><div id="lk-info"></div></div>
+    </div>
+    <details class="notes">
+      <summary>How it works</summary>
+      <p><b>The map.</b> Each node is a card or demo, coloured by its tab. The layout lets linked ideas pull together and all ideas push apart, so ideas from different tabs that share a lot end up near each other. The routes are paths along the lines, chosen so that each step explains the next.</p>
+      <p><b>Links.</b> Every link on the page carries its settings in the address, so a link can open a card already showing the thing it talks about. Each card's button copies a link to its current settings, to share or to come back to.</p>
     </details>
   </section>
 </div>
@@ -872,6 +913,9 @@
 <script src="js/infinity-view.js"></script>
 <script src="js/infinity-dims.js"></script>
 <script src="js/infinity-dims-view.js"></script>
+<script src="js/links.js"></script>
+<script src="js/links-view.js"></script>
 <script src="js/tabs.js"></script>
+<script src="js/state.js"></script>
 </body>
 </html>

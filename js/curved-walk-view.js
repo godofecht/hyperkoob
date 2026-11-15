@@ -13,7 +13,7 @@
   const sl = (id, out, fmt, set) => { const el = $(id), f = () => { set(+el.value); if (out) $(out).textContent = fmt(+el.value); }; el.oninput = f; f(); };
 
   // ---------- the Hopf fibration ----------
-  const hf = { kind: 'ring', n: 24, lat: 0.35, a: 0.6, play: !reduceMotion, flow: true, t: 0, yaw: 0.4, pitch: 0.5, drag: null, link: '', linkKey: '' };
+  const hf = { plane: 'mix', kind: 'ring', n: 24, lat: 0.35, a: 0.6, play: !reduceMotion, flow: true, t: 0, yaw: 0.4, pitch: 0.5, drag: null, link: '', linkKey: '' };
   const HUE = (s) => ((Math.atan2(s[1], s[0]) * 180) / Math.PI + 360) % 360;
   function drawHopf() {
     const { c, w, h, dpr } = UI.canvas('hf-c'), cx = w / 2, cy = h / 2, f = Math.min(w, h) * 0.14, cam = 9;
@@ -22,7 +22,7 @@
     const V = (p) => { const x1 = cyw * p[0] + syw * p[1], y1 = -syw * p[0] + cyw * p[1]; return [x1, cp * p[2] - sp * y1, sp * p[2] + cp * y1]; };
     const segs = [], LIM = 7, NP = 120;
     base.forEach((s, k) => {
-      const L = Hf.loop(s, NP, hf.a).map(V), hue = HUE(s), light = 50 + 18 * s[2];
+      const L = Hf.loop(s, NP, hf.a, hf.plane).map(V), hue = HUE(s), light = 50 + 18 * s[2];
       for (let i = 0; i < NP; i++) {
         const p = L[i], q = L[(i + 1) % NP];
         if (Math.hypot(...p) > LIM || Math.hypot(...q) > LIM) continue;
@@ -50,10 +50,10 @@
     }
     c.fillStyle = theme.muted; c.font = mono(dpr, 9); c.textAlign = 'center'; c.fillText('the sphere below', bx, by - r - 9 * dpr);
     // linking number of the first two circles, recomputed when they change
-    const key = `${hf.kind}|${hf.n}|${hf.lat.toFixed(3)}|${Math.round(hf.t * 0.15 * 20)}|${hf.a.toFixed(2)}`;
+    const key = `${hf.plane}|${hf.kind}|${hf.n}|${hf.lat.toFixed(3)}|${Math.round(hf.t * 0.15 * 20)}|${hf.a.toFixed(2)}`;
     if (key !== hf.linkKey && base.length > 1) {
       hf.linkKey = key;
-      const lk = Hf.linking(Hf.loop(base[0], 72, hf.a), Hf.loop(base[1], 72, hf.a));
+      const lk = Hf.linking(Hf.loop(base[0], 72, hf.a, hf.plane), Hf.loop(base[1], 72, hf.a, hf.plane));
       hf.link = Math.abs(lk).toFixed(2);
     }
     $('hf-v1').textContent = String(base.length);
@@ -68,13 +68,14 @@
   sl('hf-n', 'hf-nv', (v) => String(v), (v) => { hf.n = v; });
   sl('hf-lat', 'hf-latv', (v) => `${v}°`, (v) => { hf.lat = (v * Math.PI) / 180; });
   sl('hf-a', 'hf-av', (v) => `${v}°`, (v) => { hf.a = (v * Math.PI) / 180; });
+  $('hf-plane').onchange = () => { hf.plane = $('hf-plane').value; };
   $('hf-flow').onchange = () => { hf.flow = $('hf-flow').checked; };
   const hb = $('hf-play'), showH = () => { hb.textContent = hf.play ? 'Pause' : 'Play'; hb.setAttribute('aria-pressed', hf.play); };
   hb.onclick = () => { hf.play = !hf.play; showH(); }; showH();
 
   // ---------- walking among cubes ----------
   const REACH = { 3: 10, 4: 5.2, 5: 3.3, 6: 3.7 };
-  const wk = { m: 5, H: {}, M: null, walk: !reduceMotion, walked: 0, keys: new Set(), drag: null };
+  const wk = { fov: 70, thick: 0.03, fog: 1, speed: 1, m: 5, H: {}, M: null, walk: !reduceMotion, walked: 0, keys: new Set(), drag: null };
   const honey = () => wk.H[wk.m] || (wk.H[wk.m] = S.honeycomb(wk.m, REACH[wk.m]));
   function start() {
     const K = honey().K;
@@ -95,9 +96,9 @@
   let nearText = '', nearAt = 0;
   function drawWalk() {
     const { c, w, h, dpr } = UI.canvas('hw-c'), H = honey(), K = H.K, Mi = S.inverse(K, wk.M);
-    const f = Math.min(w, h) * 0.7, cx = w / 2, cy = h / 2;
+    const f = Math.max(w, h) / 2 / Math.tan((wk.fov * Math.PI) / 360), cx = w / 2, cy = h / 2;
     c.fillStyle = '#06070c'; c.fillRect(0, 0, w, h);
-    const list = [], eps = 1e-3, rho = 0.03;
+    const list = [], eps = 1e-3, rho = wk.thick;
     const images = K > 0 ? [1, -1] : [1];
     for (const e of H.edges) {
       const a = ap(Mi, e.a), b = ap(Mi, e.b);
@@ -115,7 +116,7 @@
       }
     }
     list.sort((A, B) => B[2] - A[2]);
-    const fogLen = K < 0 ? 2.1 : K === 0 ? 4.5 : 9;
+    const fogLen = (K < 0 ? 2.1 : K === 0 ? 4.5 : 9) * wk.fog;
     c.lineCap = 'round';
     let drawn = 0;
     for (const [P, Q, d, axis, sg] of list) {
@@ -141,7 +142,7 @@
     $('hw-v4').textContent = String(drawn);
   }
   function stepWalk(dt) {
-    const H = honey(), K = H.K, k = wk.keys, sp = 0.55 * dt, tr = 1.1 * dt;
+    const H = honey(), K = H.K, k = wk.keys, sp = 0.55 * dt * wk.speed, tr = 1.1 * dt;
     let M = wk.M, moved = 0;
     if (wk.walk) moved += sp * 0.55;
     if (k.has('ArrowUp') || k.has('w')) moved += sp;
@@ -171,6 +172,10 @@
   const wb = $('hw-play'), showW = () => { wb.textContent = wk.walk ? 'Stop' : 'Walk'; wb.setAttribute('aria-pressed', wk.walk); };
   wb.onclick = () => { wk.walk = !wk.walk; showW(); }; showW();
   $('hw-home').onclick = start;
+  sl('hw-fov', 'hw-fovv', (v) => `${v}°`, (v) => { wk.fov = v; });
+  sl('hw-thick', 'hw-thickv', (v) => v.toFixed(3), (v) => { wk.thick = v; });
+  sl('hw-fog', 'hw-fogv', (v) => `${v.toFixed(1)}×`, (v) => { wk.fog = v; });
+  sl('hw-speed', 'hw-speedv', (v) => `${v.toFixed(1)}×`, (v) => { wk.speed = v; });
   start();
 
   let last = performance.now();

@@ -11,7 +11,7 @@
   let theme = UI.theme;
   UI.onTheme((t) => { theme = t; });
   const mono = (dpr, px = 11) => `${px * dpr}px "IBM Plex Mono", monospace`;
-  const st = { kind: 'box', plane: 'xw', a: 0.61, play: !reduceMotion, slice: 0, res: 22, yaw: 0.7, pitch: 0.42, drag: null, fov: 0.42 };
+  const st = { dist: 4.2, lightA: -0.9, kind: 'box', plane: 'xw', a: 0.61, play: !reduceMotion, slice: 0, res: 22, yaw: 0.7, pitch: 0.42, drag: null, fov: 0.42 };
   // hue and lightness to rgb
   function rgb(h, l) {
     const s = 0.7, a = s * Math.min(l, 1 - l), f = (n) => { const k = (n + h / 30) % 12; return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); };
@@ -21,7 +21,7 @@
   let img = null, off = null;
   function draw() {
     const { c, w, h, dpr } = UI.canvas('e4-c');
-    const sc = E.scene(st.kind, st.plane, st.a, true), narrow = w < 560 * dpr;
+    const sc = E.scene(st.kind, st.plane, st.a, true), eye = [0, 0, 0, -st.dist], Lt = E.light(st.lightA), narrow = w < 560 * dpr;
     const half = narrow ? w : w / 2, boxH = narrow ? h / 2 : h;
     c.fillStyle = '#080a12'; c.fillRect(0, 0, w, h);
     // left: the solid retina, voxel by voxel, seen from outside
@@ -33,7 +33,7 @@
     let lit = 0;
     for (let i = 0; i < G; i++) for (let j = 0; j < G; j++) for (let k = 0; k < G; k++) {
       const u = -1 + (2 * i + 1) / G, v = -1 + (2 * j + 1) / G, s = -1 + (2 * k + 1) / G;
-      const hit = E.trace(sc, E.ray(u, v, s, st.fov));
+      const hit = E.trace(sc, E.ray(u, v, s, st.fov), eye, Lt);
       if (!hit) continue;
       lit++;
       const p = P(u, v, s); vox.push([p[0], p[1], p[2], hit, Math.abs(s - st.slice) < 1 / G]);
@@ -62,7 +62,7 @@
     if (!img || img.width !== R) img = c.createImageData(R, R);
     const d = img.data;
     for (let j = 0; j < R; j++) for (let i = 0; i < R; i++) {
-      const u = -1 + (2 * i + 1) / R, v = 1 - (2 * j + 1) / R, hit = E.trace(sc, E.ray(u, v, st.slice, st.fov)), o = 4 * (j * R + i);
+      const u = -1 + (2 * i + 1) / R, v = 1 - (2 * j + 1) / R, hit = E.trace(sc, E.ray(u, v, st.slice, st.fov), eye, Lt), o = 4 * (j * R + i);
       if (hit) { const [r, g, b] = shade(hit); d[o] = r; d[o + 1] = g; d[o + 2] = b; } else { d[o] = 16; d[o + 1] = 19; d[o + 2] = 30; }
       d[o + 3] = 255;
     }
@@ -73,7 +73,7 @@
     c.strokeStyle = 'rgba(255,200,90,0.9)'; c.strokeRect(sx, sy, side, side);
     c.fillStyle = 'rgba(255,255,255,0.75)'; c.fillText(`one slice of it, depth ${st.slice.toFixed(2)}: what a flat retina could hold`, ox + 10 * dpr, oy + 16 * dpr);
     $('e4-v1').textContent = `${(G ** 3).toLocaleString()} rays, ${lit.toLocaleString()} lit`;
-    const mid = E.trace(sc, E.ray(0, 0, st.slice, st.fov));
+    const mid = E.trace(sc, E.ray(0, 0, st.slice, st.fov), eye, Lt);
     $('e4-v2').textContent = mid ? (mid.cell !== undefined ? `cell facing ${['-x', '+x', '-y', '+y', '-z', '+z', '-w', '+w'][mid.cell]}` : 'the 4D ball') : 'nothing';
     $('e4-v3').textContent = [...new Set(vox.map((v) => v[3].cell).filter((x) => x !== undefined))].length + ' of 8';
   }
@@ -86,6 +86,9 @@
   const sl = (id, out, fmt, set) => { const el = $(id), f = () => { set(+el.value); $(out).textContent = fmt(+el.value); }; el.oninput = f; f(); };
   sl('e4-slice', 'e4-slicev', (v) => v.toFixed(2), (v) => { st.slice = v; });
   sl('e4-res', 'e4-resv', (v) => `${v}³`, (v) => { st.res = v; });
+  sl('e4-fov', 'e4-fovv', (v) => `${Math.round((2 * Math.atan(v) * 180) / Math.PI)}°`, (v) => { st.fov = v; });
+  sl('e4-dist', 'e4-distv', (v) => v.toFixed(1), (v) => { st.dist = v; });
+  sl('e4-light', 'e4-lightv', (v) => `${v}°`, (v) => { st.lightA = (v * Math.PI) / 180; });
   sl('e4-a', 'e4-av', (v) => `${Math.round(v)}°`, (v) => { st.a = (v * Math.PI) / 180; });
   const pb = $('e4-play'), show = () => { pb.textContent = st.play ? 'Pause' : 'Turn'; pb.setAttribute('aria-pressed', st.play); };
   pb.onclick = () => { st.play = !st.play; show(); }; show();

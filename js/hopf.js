@@ -16,11 +16,20 @@
   }
   // Turn the 3-sphere in the plane of its first and last coordinates before
   // looking at it; a rigid motion of the 3-sphere, so circles stay circles.
-  const spin = (p, a) => [p[0] * Math.cos(a) - p[3] * Math.sin(a), p[1], p[2], p[0] * Math.sin(a) + p[3] * Math.cos(a)];
+  // plane 'mix' turns (Re z1, Im z2), which moves circles to other circles;
+  // 'fibre' multiplies z1 and z2 by e^(ia), sliding every point along its own
+  // circle, so the picture does not change; 'base' turns z2 alone, which
+  // turns the sphere below about its axis.
+  function spin(p, a, plane = 'mix') {
+    const c = Math.cos(a), s = Math.sin(a);
+    if (plane === 'fibre') return [p[0] * c - p[1] * s, p[0] * s + p[1] * c, p[2] * c - p[3] * s, p[2] * s + p[3] * c];
+    if (plane === 'base') return [p[0], p[1], p[2] * c - p[3] * s, p[2] * s + p[3] * c];
+    return [p[0] * c - p[3] * s, p[1], p[2], p[0] * s + p[3] * c];
+  }
   // Stereographic projection from (0, 0, 0, 1) into ordinary space.
   function stereo(p) { const k = 1 / Math.max(1e-6, 1 - p[3]); return [p[0] * k, p[1] * k, p[2] * k]; }
   // The fibre as a closed loop in space, n points.
-  function loop(s, n, a = 0) { const out = []; for (let i = 0; i < n; i++) out.push(stereo(spin(fiber(s, (2 * Math.PI * i) / n), a))); return out; }
+  function loop(s, n, a = 0, plane = 'mix') { const out = []; for (let i = 0; i < n; i++) out.push(stereo(spin(fiber(s, (2 * Math.PI * i) / n), a, plane))); return out; }
   // Points on the sphere for each pattern.
   function base(kind, n, lat, t = 0) {
     const out = [], at = (th, ph) => [Math.cos(th) * Math.cos(ph), Math.cos(th) * Math.sin(ph), Math.sin(th)];

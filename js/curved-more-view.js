@@ -13,7 +13,7 @@
 
   // ---------- inside the 3-sphere ----------
   const SETS = { cell600: '600-cell corners (120)', cell24: '24-cell corners (24)', cell120: '120-cell corners (600)', tesseract: 'tesseract corners (16)' };
-  const w3 = { set: 'cell600', r: 0.09, both: true, walk: !reduceMotion, F: S.startFrame(), walked: 0, drag: null, keys: new Set(), V: null };
+  const w3 = { fov: 116, set: 'cell600', r: 0.09, both: true, walk: !reduceMotion, F: S.startFrame(), walked: 0, drag: null, keys: new Set(), V: null };
   const home = w3.F[0].slice();
   function objects() {
     if (!w3.V || w3.V.set !== w3.set) { const V = S4[w3.set]().V.map(S.norm); V.set = w3.set; w3.V = V; }
@@ -22,7 +22,7 @@
   // a colour for each corner from where it sits in 4D, so it can be recognised from any side
   const hueOf = (p) => ((Math.atan2(p[1], p[0]) + Math.atan2(p[3], p[2]) * 0.5) * 180 / Math.PI + 720) % 360;
   function drawWalk() {
-    const { c, w, h, dpr } = UI.canvas('s3-c'), F = w3.F, f = Math.min(w, h) * 0.62, cx = w / 2, cy = h / 2;
+    const { c, w, h, dpr } = UI.canvas('s3-c'), F = w3.F, f = Math.max(w, h) / 2 / Math.tan((w3.fov * Math.PI) / 360), cx = w / 2, cy = h / 2;
     const dark = theme.bg && /^#0|^#1/.test(theme.bg);
     c.fillStyle = dark ? '#05060a' : '#0b0e18'; c.fillRect(0, 0, w, h);
     const list = [];
@@ -91,6 +91,7 @@
   const sel = $('s3-set'); sel.innerHTML = Object.entries(SETS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
   sel.onchange = () => { w3.set = sel.value; };
   $('s3-r').oninput = () => { w3.r = +$('s3-r').value; $('s3-rv').textContent = w3.r.toFixed(2); };
+  $('s3-fov').oninput = () => { w3.fov = +$('s3-fov').value; $('s3-fovv').textContent = w3.fov + '°'; };
   $('s3-both').onchange = () => { w3.both = $('s3-both').checked; };
   const wb = $('s3-play'), showW = () => { wb.textContent = w3.walk ? 'Stop' : 'Walk'; wb.setAttribute('aria-pressed', w3.walk); };
   wb.onclick = () => { w3.walk = !w3.walk; showW(); }; showW();
