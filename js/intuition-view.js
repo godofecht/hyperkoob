@@ -111,7 +111,7 @@
 
   let last = performance.now(), partsDone = false;
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
     if (visible('cau-c')) { drawCauchy(); if (!partsDone) { drawParts(); partsDone = true; } }
     if (visible('eq-c')) drawEquator();
     if (visible('ho-c')) drawHolonomy(dt);

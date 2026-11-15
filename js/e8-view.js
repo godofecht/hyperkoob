@@ -133,7 +133,7 @@
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
     if (!$('nv-e8').hidden && !$('s-never').hidden) {
       if (st.spin && !st.drag && (st.view === 'shadow' || st.view === 'slice')) st.yaw += dt * 0.15;
       draw();

@@ -684,7 +684,7 @@ postMessage({ key, n: S.n, volume: S.volume, cells: cells.map((c) => ({ faces: c
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
     if (!$('s-shadows').hidden) frameMain(dt);
     if (!$('s-tiling').hidden) drawTile(dt);
   }

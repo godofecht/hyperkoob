@@ -265,7 +265,7 @@
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
     if (!UI.shown('s-infinity')) return;
     if (fl.play) { fl.t = (fl.t + dt * 0.03) % (1 - fl.w); $('inf-t').value = fl.t; }
     if (ct.play) { ct.k += dt * 3; if (ct.k > ct.N * ct.N * 1.3 + 8) ct.k = 0; }

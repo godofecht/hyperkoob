@@ -153,7 +153,7 @@
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
     if (!$('s-high').hidden) {
       if (st.play) { st.v = Math.min(5, st.v + dt * 0.35); setN(10 ** st.v, false, true); if (st.v >= 5) { st.play = false; showPlay(); } }
       if (st.dirty) { st.dirty = false; drawAll(); }

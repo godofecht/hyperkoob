@@ -441,10 +441,24 @@
         </dl>
       </div>
     </div>
+    <div class="hd-grid">
+    <div class="card hd-card wide">
+      <h3>Through a 4D eye</h3>
+      <p class="sub" style="margin:0">Your retina is a surface. A 4D creature's retina is a solid. Each point of it receives light along one ray through the pupil, so the eye takes in a whole 3D picture, inside and all, at once. Here rays are traced through a 4D scene. Left: its whole retina. Right: one slice, as much as yours could hold. The tesseract's cells are coloured by the axis they face: x red, y green, z blue, w gold, darker on the minus side.</p>
+      <canvas id="e4-c" class="tall orbit" aria-label="The solid retina of a 4D eye, and one slice of it"></canvas>
+      <div class="row"><div class="top"><label class="lab" for="e4-kind">It looks at</label><select id="e4-kind"><option value="box">a tesseract</option><option value="ball">a 4D ball</option><option value="both">both</option></select></div></div>
+      <div class="row"><div class="top"><label class="lab" for="e4-plane">Turning in the plane of</label><select id="e4-plane"><option value="xw">x and w</option><option value="yw">y and w</option><option value="zw">z and w</option><option value="xy">x and y</option></select></div></div>
+      <div class="row"><div class="top"><label class="lab" for="e4-a">Turned by <span id="e4-av">35°</span></label><button class="btn" id="e4-play">Turn</button></div><input id="e4-a" type="range" min="0" max="359" step="1" value="35"></div>
+      <div class="row"><div class="top"><label class="lab" for="e4-slice">Slice of the retina</label><span class="hint" id="e4-slicev">0.00</span></div><input id="e4-slice" type="range" min="-0.95" max="0.95" step="0.01" value="0"></div>
+      <div class="row"><div class="top"><label class="lab" for="e4-res">Retina cells</label><span class="hint" id="e4-resv">22³</span></div><input id="e4-res" type="range" min="10" max="34" step="1" value="22"></div>
+      <dl><dt>Retina</dt><dd id="e4-v1"></dd><dt>At the centre of the slice</dt><dd id="e4-v2"></dd><dt>Cells of the tesseract in view</dt><dd id="e4-v3"></dd></dl>
+    </div>
+    </div>
     <details class="notes">
       <summary>How it works</summary>
       <p><b>Reach inside.</b> We see the 3D slice w = 0 of a 4D world. A tesseract moving along w crosses that slice as a growing and shrinking solid, corner first: a point, a tetrahedron, a truncated tetrahedron, an octahedron and back. It appears in the middle of the sealed box because the box only seals x, y and z. The key leaves the same way: lifted a little in w it is gone from our slice entirely, and it comes back down outside the walls. Nothing crosses a wall.</p>
-      <p><b>Mirror you.</b> Turning by an angle in the plane of x and w sends (x, y, z) to (x cos a, y, z) in our slice, with the rest of x moved into w. The turn is rigid in 4D; every distance in the hand stays the same. Halfway round the hand is flat in our slice, and a half turn sends x to minus x: a mirror image. In 4D left and right hands are the same shape.</p>
+
+      <p><b>Through a 4D eye.</b> An eye is a pinhole and a screen one dimension down. The eye here sits on the w axis looking along it, and the point (u, v, s) of its cube-shaped retina receives the ray with direction (u, v, s, 1/f). Each ray is traced to the first thing it meets: a tesseract, by cutting the ray with its four pairs of walls, or a 4D ball, by solving a quadratic. Light comes from one direction in 4D. A tesseract seen face on fills the retina as a solid cube, its near cell, wrapped by six squashed cells, the same picture as its perspective shadow, but solid and shaded. We see a 3D world as flat pictures; the creature would see ours the same way: every room of a house and every organ of a body at once.</p>      <p><b>Mirror you.</b> Turning by an angle in the plane of x and w sends (x, y, z) to (x cos a, y, z) in our slice, with the rest of x moved into w. The turn is rigid in 4D; every distance in the hand stays the same. Halfway round the hand is flat in our slice, and a half turn sends x to minus x: a mirror image. In 4D left and right hands are the same shape.</p>
       <p><b>Untie any knot.</b> Knots exist only in 3D. The rope here is blended straight from a trefoil to a circle, a move that in 3D passes the rope through itself. Lifted into w by different amounts along its length, the two strands are at different heights in w when they meet, so they pass without touching. The readout tracks the closest the strands come in 3D and in 4D.</p>
       <p><b>See inside you.</b> A creature that lives in a plane sees only the edges of things, and a closed outline hides its inside. From above we see every organ inside its closed body and its closed house at once. A 3D finger pushed through the plane appears inside its body as a circle from nowhere, touches its heart without breaking its skin, and leaves. The neighbour outside sees only the wall the whole time. A 4D eye would see you the same way.</p>
     </details>
@@ -622,6 +636,27 @@
       <div class="controls"><button class="btn" id="stn-snap">Size that closes</button></div>
       <dl><dt>Inner radius, before inversion</dt><dd id="stn-v1"></dd><dt>The chain</dt><dd id="stn-v2"></dd></dl>
     </div>
+    <div class="card hd-card">
+      <h3>Circles that fill the 3-sphere</h3>
+      <p class="sub" style="margin:0">The 3-sphere is made entirely of circles, one for each point of an ordinary sphere, and no two touch. Every two of them link once, like two rings of a chain. Here some of them are drawn in ordinary space, the way a map draws the globe. Points in a ring on the sphere give circles that make up a torus. Drag to turn.</p>
+      <canvas id="hf-c" class="sq orbit" aria-label="Circles of the Hopf fibration, linked in space"></canvas>
+      <div class="row"><div class="top"><label class="lab" for="hf-kind">Points on the sphere</label>
+        <select id="hf-kind"><option value="ring">one ring</option><option value="rings">three rings</option><option value="meridian">a line from pole to pole</option><option value="spiral">spread all over</option></select></div></div>
+      <div class="row"><div class="top"><label class="lab" for="hf-n">Circles</label><span class="hint" id="hf-nv">24</span></div><input id="hf-n" type="range" min="2" max="60" step="1" value="24"></div>
+      <div class="row"><div class="top"><label class="lab" for="hf-lat">Latitude of the ring</label><span class="hint" id="hf-latv">20°</span></div><input id="hf-lat" type="range" min="-80" max="80" step="1" value="20"></div>
+      <div class="row"><div class="top"><label class="lab" for="hf-a">Turn the 3-sphere <span id="hf-av">34°</span></label><button class="btn" id="hf-play">Play</button></div><input id="hf-a" type="range" min="0" max="359" step="1" value="34"></div>
+      <label class="check"><input type="checkbox" id="hf-flow" checked> Show the flow round each circle</label>
+      <dl><dt>Circles drawn</dt><dd id="hf-v1"></dd><dt>Linking number of the first two</dt><dd id="hf-v2"></dd><dt>Together they make</dt><dd id="hf-v3"></dd></dl>
+    </div>
+    <div class="card hd-card wide">
+      <h3>Walk through space built from cubes</h3>
+      <p class="sub" style="margin:0">Cubes pack space with 4 round every edge. Fit only 3 and they close up into the 3-sphere, as the 8 cubes of a tesseract. Force 5 or 6 round each edge and the cubes need hyperbolic space, where every cube is the same size and there is room for far more of them at each distance. Drag to look; hold the arrows or use the arrow keys to walk.</p>
+      <canvas id="hw-c" class="tall" tabindex="0" aria-label="A first-person view through a honeycomb of cubes"></canvas>
+      <div class="row"><div class="top"><span class="lab">Cubes round each edge</span>
+        <div class="seg" role="group" aria-label="Cubes round each edge" id="hw-m"><button data-m="3" aria-pressed="false">3, sphere</button><button data-m="4" aria-pressed="false">4, flat</button><button data-m="5" aria-pressed="true">5, hyperbolic</button><button data-m="6" aria-pressed="false">6, ideal</button></div></div></div>
+      <div class="controls"><button class="btn" id="hw-left" aria-label="Turn left">&larr;</button><button class="btn" id="hw-fwd" aria-label="Walk forward">&uarr;</button><button class="btn" id="hw-back" aria-label="Walk back">&darr;</button><button class="btn" id="hw-right" aria-label="Turn right">&rarr;</button><button class="btn" id="hw-play">Walk</button><button class="btn" id="hw-home">Back to the start</button></div>
+      <dl><dt>Space</dt><dd id="hw-v1"></dd><dt>Cubes near you</dt><dd id="hw-v2"></dd><dt>Walked</dt><dd id="hw-v3"></dd><dt>Edges on screen</dt><dd id="hw-v4"></dd></dl>
+    </div>
     </div>
     <details class="notes">
       <summary>How it works</summary>
@@ -631,7 +666,9 @@
       <p><b>Growth.</b> The steps readout counts new tiles at each step out from the first. In the flat plane the count grows steadily; in the hyperbolic plane it multiplies at every step, as the length of a circle grows like sinh r. A hyperbolic circle of radius 10 is about 69,000 long.</p>
       <p><b>Inside a 3-sphere.</b> The 3-sphere is the set of points at distance 1 from the centre in 4D, a closed space with no edge, as the surface of a ball is in 3D. Light runs along great circles. A ball of radius r at distance d along them looks as wide as sin r / sin d says: a quarter turn away it looks its true size, beyond that it looks bigger the farther it is, and near the antipode, distance π, it fills the whole sky, because every great circle out of you meets there. Light also goes the other way round, distance 2π - d, so each ball is seen a second time, behind and opposite. Walk 2π straight ahead and you are home. The balls sit at the corners of the regular 4D solids from the fourth dimension tab, here placed on the 3-sphere: the 600-cell's 120 corners are 36° apart.</p>
       <p><b>Steiner's porism.</b> Jakob Steiner (1826). An inversion, or the disk's rigid motion z to (z - a)/(1 - conj(a) z), maps circles to circles and keeps touching circles touching. It can move the inner circle to the centre, shown in the inset, where the chain is a ring of equal circles that can be turned freely. n circles close up after k turns exactly when the inner radius is (1 - sin(πk/n))/(1 + sin(πk/n)) of the outer one. Change that size and a gap or an overlap appears, the same from every start.</p>
-    </details>
+
+      <p><b>The Hopf fibration.</b> Heinz Hopf (1931). Write a point of the 3-sphere as two complex numbers (z1, z2) with |z1|² + |z2|² = 1. The map to (2 z1 conj(z2), |z1|² - |z2|²) lands on the ordinary sphere, and the points that land on the same place form a great circle: multiply both numbers by e^(iθ). So the 3-sphere is a family of circles, one per point of the sphere, any two linked once. The page projects them stereographically from one point of the 3-sphere into space, which keeps circles circles; the circle through that point becomes a straight line through infinity. The linking number is measured with Gauss's integral over the drawn circles. Turning the 3-sphere before projecting is a rigid motion of it, so the picture changes and the circles stay linked.</p>
+      <p><b>Cubes round an edge.</b> A cube's faces meet at 90°, so exactly 4 fit round an edge in flat space. In the 3-sphere cubes are fatter and their faces meet at 120°: 3 fit, and 8 of them fill the whole space, as the cells of the tesseract. In hyperbolic space they are thinner, and a cube whose faces meet at 72° fits 5 to an edge: the order-5 cubic honeycomb {4, 3, 5}. At 60° six fit, but the cube's corners have gone off to infinity. The faces sit at distance r from the centre with cos(2π/m) = -K sin_K(r)², where K is the curvature. The view uses one model for all three: points are 4-vectors and rigid motions are 4×4 matrices; in each, geodesics through you are straight lines from your eye, so every edge is drawn as a straight segment. Edges are coloured by direction, fade with distance, and thin as sin_K of their distance. On the 3-sphere each edge is seen twice, the second time the long way round. When you cross a face, the honeycomb is shifted back one cube, which changes nothing you can see.</p>    </details>
   </section>
 
   <section class="panel" id="s-strings" role="tabpanel" aria-labelledby="st-h" hidden>
@@ -691,7 +728,7 @@
     <div class="sec-top">
       <div class="sec-head">
         <h2 id="inf-h">Infinity</h2>
-        <p>Infinite sets break the rules that finite ones keep. A line can pass through every point of a square. There are as many fractions as whole numbers, and more real numbers than both. A set can be cut into pieces that reassemble into two copies of itself. A horn can hold a finite amount of paint and still have too much surface to paint.</p>
+        <p>Infinite sets break the rules that finite ones keep. A line can pass through every point of a square. There are as many fractions as whole numbers, and more real numbers than both. A set can be cut into pieces that reassemble into two copies of itself. A horn can hold a finite amount of paint and still have too much surface to paint. And infinity bends dimension: a line can fill a cube in any number of dimensions, and a box with infinitely many sides can still have a short diagonal.</p>
       </div>
     </div>
     <div class="hd-grid">
@@ -749,6 +786,40 @@
         <div class="hd-read"><span class="lab">Its path</span><b id="inf-v6a"></b></div>
         <div class="hd-read"><span class="lab">Longest in range</span><b id="inf-v6b"></b></div>
       </div>
+      <div class="card hd-card">
+        <h3>Where a patch of the square came from</h3>
+        <p class="sub" style="margin:0">Run the curve backwards. A disk in the square comes from several separate pieces of the line, coloured by when the line gets there. Drag the disk, or let it wander.</p>
+        <canvas id="inf-c7" class="tall orbit" aria-label="A disk in the square and the pieces of the line that land in it"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="inf-pk">Curve</label>
+          <select id="inf-pk"><option value="hilbert">Hilbert</option><option value="peano">Peano</option><option value="zorder">Z-order</option></select></div></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-pn">Order</label><span class="hint" id="inf-pnv">6</span></div><input id="inf-pn" type="range" min="2" max="7" step="1" value="6"></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-pr">Disk radius <span id="inf-prv">0.14</span></label><button class="btn" id="inf-play7">Wander</button></div><input id="inf-pr" type="range" min="0.03" max="0.4" step="0.005" value="0.14"></div>
+        <div class="hd-read"><span class="lab">Share of the line</span><b id="inf-v7a"></b></div>
+        <div class="hd-read"><span class="lab">Pieces</span><b id="inf-v7b"></b></div>
+        <div class="hd-read"><span class="lab">Same disk</span><b id="inf-v7c"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>A line through every dimension</h3>
+        <p class="sub" style="margin:0">The same construction fills a cube, or a cube in any number of dimensions. The orange stretch is a sixteenth of the line. In d dimensions it spans 16^(-1/d) of the side, so the more dimensions, the farther a short stretch reaches. Drag to turn it.</p>
+        <canvas id="inf-c8" class="sq orbit" aria-label="A Hilbert curve filling a cube in several dimensions"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="inf-dd">Dimensions</label><span class="hint" id="inf-ddv">3</span></div><input id="inf-dd" type="range" min="2" max="6" step="1" value="3"></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-db">Order</label><span class="hint" id="inf-dbv">3</span></div><input id="inf-db" type="range" min="1" max="4" step="1" value="3"></div>
+        <div class="controls"><button class="btn" id="inf-play8">Play</button></div>
+        <div class="hd-read"><span class="lab">Cells</span><b id="inf-v8a"></b></div>
+        <div class="hd-read"><span class="lab">A sixteenth of the line spans</span><b id="inf-v8b"></b></div>
+        <div class="hd-read"><span class="lab">A cube of that volume has side</span><b id="inf-v8c"></b></div>
+      </div>
+      <div class="card hd-card">
+        <h3>Infinitely many sides, a finite diagonal</h3>
+        <p class="sub" style="margin:0">A box with one side for every whole number. With sides 1, 1/2, 1/3, ... its diagonal stays finite in every dimension and tends to π/√6, because 1 + 1/4 + 1/9 + ... = π²/6. The coloured path walks the diagonal one dimension at a time. Compare the <a href="#high">high dimensions</a> tab, where the unit cube's diagonal grows without end.</p>
+        <canvas id="inf-c9" class="tall" aria-label="The shadow of a box with many sides, and its diagonal against dimension"></canvas>
+        <div class="row"><div class="top"><label class="lab" for="inf-hb">Box</label><select id="inf-hb"></select></div></div>
+        <div class="row"><div class="top"><label class="lab" for="inf-hn">Dimensions</label><span class="hint" id="inf-hnv">12</span></div><input id="inf-hn" type="range" min="1" max="60" step="1" value="12"></div>
+        <div class="controls"><button class="btn" id="inf-play9">Play</button></div>
+        <div class="hd-read"><span class="lab">Diagonal</span><b id="inf-v9a"></b></div>
+        <div class="hd-read"><span class="lab">Limit</span><b id="inf-v9b"></b></div>
+        <div class="hd-read"><span class="lab">Volume</span><b id="inf-v9c"></b></div>
+      </div>
     </div>
     <details class="notes">
       <summary>How it works</summary>
@@ -758,6 +829,9 @@
       <p><b>One piece becomes three.</b> The words in two letters a and b and their inverses, with no letter next to its inverse, form the free group. Split it by first letter into W(a), W(a⁻¹), W(b), W(b⁻¹), plus the empty word. Put a in front of every word of W(a⁻¹) and the a⁻¹ cancels: you get every word that does not start with a. One quarter, moved, is three quarters. So W(a) and a W(a⁻¹) rebuild the whole group, and W(b) and b W(b⁻¹) rebuild it again. Two copies from four pieces. The drawing puts each word at the point its moves send the centre to in the hyperbolic plane, where a and b are steps of the chosen length. The group then acts by rigid motions, and the move a carries the quarter W(a⁻¹) onto three quarters of the disk. The four coloured caps are the ping-pong lemma's half-planes: they stay apart when the step is longer than 2 artanh(1/√2) ≈ 1.763, which proves the group is free. Shorten the step past that and the pieces tangle. Banach and Tarski (1924) found two rotations of a ball that generate this group, and so cut a ball into five pieces that reassemble into two balls the same size as the first. Choosing which pieces the ball's points belong to needs the axiom of choice, and the pieces have no volume.</p>
       <p><b>Gabriel's horn.</b> Spin y = 1/x, for x from 1 on, about the x-axis. Its volume is π(1 - 1/L) up to length L, which never passes π. Its surface is at least 2π ln L, which grows without end. So a can of π units of paint fills the horn, and yet no amount paints its surface. The paint inside is thinner than any coat, which is the way out of the puzzle. Evangelista Torricelli found the finite volume in 1641.</p>
       <p><b>Collatz.</b> Halve an even number; triple an odd one and add 1. Lothar Collatz asked in 1937 whether every start comes down to 1. Each path is drawn backwards from 1, turning one way at each even number and the other at each odd one, so paths that share an ending share a branch. 27 takes 111 steps and climbs to 9232 on the way. Every start below 2^68 has been checked and comes down (Barina, 2020), and no proof is known. This page checks every start up to 100,000.</p>
+      <p><b>Where a patch came from.</b> A continuous curve through every point of the square cannot be one to one: Eugen Netto proved in 1879 that no continuous one-to-one map takes a line onto a square. Some points are passed two, three or four times, and every disk is the image of several separate stretches of the line. The Hilbert curve needs few pieces; the Z-order, which jumps, needs many more. A one-to-one pairing of the line with the square does exist, by interleaving digits (Cantor, 1877), so the two have the same number of points. Dimension is what that pairing must tear apart.</p>
+      <p><b>Every dimension.</b> The d-dimensional Hilbert curve uses John Skilling's method (2004): the bits of the position along the line are dealt out to the d axes, then a Gray code and a sequence of turns are undone. A stretch of length w fills w of the cube's volume, so it spans about w^(1/d) of each side. As d grows that tends to 1: in very many dimensions a short piece of the line already reaches across the whole cube. The pictures above 3D are shadows of the cube turned slowly through its extra axes.</p>
+      <p><b>The Hilbert cube.</b> The box with sides 1, 1/2, 1/3, ... in infinitely many dimensions is the Hilbert cube. Its diagonal squared is 1 + 1/4 + 1/9 + ..., which Euler showed is π²/6 (the Basel problem, 1734), so the diagonal is π/√6 ≈ 1.2825 and every point of it is within that distance of every other. Its volume, the product of the sides, is 1/n!, which goes to 0. The box with all sides 1 has diagonal √n and no finite size at all. The picture is the shadow of the box on a turning plane: a zonogon, the sum of the shadows of its edges.</p>
     </details>
   </section>
 </div>
@@ -770,6 +844,8 @@
 <script src="js/quasi-view.js"></script>
 <script src="js/fourd.js"></script>
 <script src="js/fourd-view.js"></script>
+<script src="js/eye4.js"></script>
+<script src="js/eye4-view.js"></script>
 <script src="js/knots.js"></script>
 <script src="js/fourd-more.js"></script>
 <script src="js/solids4.js"></script>
@@ -787,10 +863,15 @@
 <script src="js/sphere3.js"></script>
 <script src="js/steiner.js"></script>
 <script src="js/curved-more-view.js"></script>
+<script src="js/hopf.js"></script>
+<script src="js/space3.js"></script>
+<script src="js/curved-walk-view.js"></script>
 <script src="js/strings.js"></script>
 <script src="js/strings-view.js"></script>
 <script src="js/infinity.js"></script>
 <script src="js/infinity-view.js"></script>
+<script src="js/infinity-dims.js"></script>
+<script src="js/infinity-dims-view.js"></script>
 <script src="js/tabs.js"></script>
 </body>
 </html>

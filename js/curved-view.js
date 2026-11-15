@@ -185,7 +185,7 @@
 
   let last = performance.now(), lastRoot = 0;
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
     if (!$('s-curved').hidden && st.T) {
       if (st.drift && !st.drag) {
         if (st.view === 'globe') { st.yaw += dt * 0.25; st.dirty = true; }

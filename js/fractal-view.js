@@ -153,7 +153,7 @@
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
     if (!$('s-fractal').hidden) {
       if (!st.data) build();
       if (st.data.P[0].length === 3 && st.spin && !st.drag) { st.yaw += dt * 0.3; st.dirty = true; }

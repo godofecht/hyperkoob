@@ -305,7 +305,7 @@
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
     if (st.visible) {
       if (st.play && DEMOS[st.demo].timed !== false) { st.t = (st.t + dt / DEMOS[st.demo].secs) % 1; tIn.value = st.t; }
       if (st.spin && !st.drag && st.demo !== 'see') st.yaw += dt * 0.15;

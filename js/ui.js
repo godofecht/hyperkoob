@@ -47,8 +47,17 @@
 
   // Whether a tab's panel is the one on screen.
   const shown = (panel) => { const el = $(panel); return !!el && !el.hidden; };
-  // Whether an element is laid out (its panel is shown and it is not hidden).
-  const visible = (id) => { const el = typeof id === 'string' ? $(id) : id; return !!el && el.offsetParent !== null; };
+  // Whether an element is laid out (its panel is shown and it is not hidden)
+  // and near the screen, so views skip drawing canvases scrolled out of sight.
+  const near = new WeakMap();
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => { for (const e of es) near.set(e.target, e.isIntersecting); }, { rootMargin: '200px' }) : null;
+  const visible = (id) => {
+    const el = typeof id === 'string' ? $(id) : id;
+    if (!el || el.offsetParent === null) return false;
+    if (!io) return true;
+    if (!near.has(el)) { near.set(el, true); io.observe(el); }
+    return near.get(el);
+  };
 
   g.UI = { fit, canvas, onTheme, loop, shown, visible, get theme() { if (!theme) readTheme(); return theme; } };
 })(window);

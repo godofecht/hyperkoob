@@ -131,7 +131,7 @@
 
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
     if (!UI.shown('s-curved')) return;
     if (UI.visible('s3-c')) { step(dt); drawWalk(); }
     if (sp.play) sp.t += dt * 0.4;
